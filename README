@@ -1,0 +1,7 @@
+Colorsmith is a program which takes input and interprets as instructions for a
+theoretical processor that outputs color to the Pimoroni PiGlow.
+
+Because of this, it only works on the raspberry pi and requires a PiGlow as
+well as an installation of wiringPi by Gordon Henderson.
+
+
