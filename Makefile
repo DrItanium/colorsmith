@@ -22,7 +22,6 @@ ${OBJ}: colorsmith.h config.mk
 colorsmith: ${OBJ}
 	@echo CC -o $@
 	@${CC} -o $@ ${OBJ} ${LDFLAGS}
-	@strip $@
 
 clean:
 	@echo cleaning
