@@ -44,12 +44,7 @@ void interpret(ColorsmithInstruction* inst) {
 void glow1(ColorsmithInstruction* inst) {
    int ring, intensity;
    ring = inst->ring % 6;
-   if(ring == 5) {
-      intensity = inst->intensity % 10;
-   } else {
-      intensity = inst->intensity;
-   }
-   
+   intensity = inst->intensity % 10;
    switch(inst->leg) {
       case 0:
       case 1:
@@ -86,28 +81,30 @@ void glow1(ColorsmithInstruction* inst) {
 }
 
 void glowleg(ColorsmithInstruction* inst) {
+   int intensity;
+   intensity = inst->intensity % 10;
    switch(inst->leg) {
       case 0:
       case 1:
       case 2:
-         piGlowLeg(inst->leg, inst->intensity);
+         piGlowLeg(inst->leg, intensity);
          break;
       case 3:
-         piGlowLeg(0, inst->intensity);
-         piGlowLeg(1, inst->intensity);
+         piGlowLeg(0, intensity);
+         piGlowLeg(1, intensity);
          break;
       case 4:
-         piGlowLeg(0, inst->intensity);
-         piGlowLeg(2, inst->intensity);
+         piGlowLeg(0, intensity);
+         piGlowLeg(2, intensity);
          break;
       case 5:
-         piGlowLeg(1, inst->intensity);
-         piGlowLeg(2, inst->intensity);
+         piGlowLeg(1, intensity);
+         piGlowLeg(2, intensity);
          break;
       case 6:
-         piGlowLeg(0, inst->intensity);
-         piGlowLeg(1, inst->intensity);
-         piGlowLeg(2, inst->intensity);
+         piGlowLeg(0, intensity);
+         piGlowLeg(1, intensity);
+         piGlowLeg(2, intensity);
          break;
       case 7:
          /* turn them off */
@@ -122,7 +119,7 @@ void glowleg(ColorsmithInstruction* inst) {
 }
 
 void glowring(ColorsmithInstruction* inst) {
-   piGlowRing(inst->ring % 6, inst->intensity);
+   piGlowRing(inst->ring % 6, inst->intensity % 10);
 }
 
 void glowdelay(ColorsmithInstruction* inst) {
