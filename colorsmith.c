@@ -42,30 +42,36 @@ void interpret(ColorsmithInstruction* inst) {
    }
 }
 void glow1(ColorsmithInstruction* inst) {
-   int ring;
+   int ring, intensity;
    ring = inst->ring % 6;
+   if(ring == 5) {
+      intensity = inst->intensity % 10;
+   } else {
+      intensity = inst->intensity;
+   }
+   
    switch(inst->leg) {
       case 0:
       case 1:
       case 2:
-         piGlow1(inst->leg, ring, inst->intensity);
+         piGlow1(inst->leg, ring, intensity);
          break;
       case 3:
-         piGlow1(0, ring, inst->intensity);
-         piGlow1(1, ring, inst->intensity);
+         piGlow1(0, ring, intensity);
+         piGlow1(1, ring, intensity);
          break;
       case 4:
-         piGlow1(0, ring, inst->intensity);
-         piGlow1(2, ring, inst->intensity);
+         piGlow1(0, ring, intensity);
+         piGlow1(2, ring, intensity);
          break;
       case 5:
-         piGlow1(1, ring, inst->intensity);
-         piGlow1(2, ring, inst->intensity);
+         piGlow1(1, ring, intensity);
+         piGlow1(2, ring, intensity);
          break;
       case 6:
-         piGlow1(0, ring, inst->intensity);
-         piGlow1(1, ring, inst->intensity);
-         piGlow1(2, ring, inst->intensity);
+         piGlow1(0, ring, intensity);
+         piGlow1(1, ring, intensity);
+         piGlow1(2, ring, intensity);
          break;
       case 7:
          /* turn them off */
@@ -120,16 +126,5 @@ void glowring(ColorsmithInstruction* inst) {
 }
 
 void glowdelay(ColorsmithInstruction* inst) {
-   union {
-      ushort value;
-      struct {
-         byte leg : 3;
-         byte ring : 3;
-         byte intensity : 8;
-      };
-   } container;
-   container.leg = inst->leg;
-   container.ring = inst->ring;
-   container.intensity = inst->intensity;
-   delay(container.value);
+   delay(inst->intensity);
 }
