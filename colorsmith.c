@@ -15,9 +15,10 @@ void decode(FILE* input) {
    int value;
    do {
      value = fgetc(input);
-     inst.elements[0] = value;
-     value = fgetc(input);
-     inst.elements[1] = value;
+     inst.command = getcommand(value);
+     inst.leg = getleg(value);
+     inst.ring = getring(value);
+     inst.intensity = fgetc(input);
      interpret(&inst);
    } while(value != EOF);
 }

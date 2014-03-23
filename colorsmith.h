@@ -2,16 +2,15 @@
 typedef unsigned char byte;
 typedef unsigned short ushort;
 
-typedef union ColorsmithInstruction {
-   byte elements[2];
-   struct {
-      byte command : 2;
-      /* overloaded modes :D */
-      byte leg : 3; 
-      byte ring : 3;
-      byte intensity : 8;
-   };
+typedef struct ColorsmithInstruction {
+   byte command;
+   byte leg;
+   byte ring;
+   byte intensity;
 } ColorsmithInstruction;
+#define getcommand(value) ((byte)(value & 0x3))
+#define getleg(value) ((byte)((value & 0x1C) >> 2))
+#define getring(value) ((byte)((value & 0xE0) >> 5))
 
 enum {
    ColorsmithCommandGlow1 = 0,
