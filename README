@@ -17,7 +17,8 @@ delay
 
 Read the source code for all of the combinations
 
-See what sorts of patterns 
+See what sorts of patterns you get from all sorts of inputs. I've only done arm
+code and normal text but soon I want to try ia64, x86, and amd64 code as well.
 
 -------------------------------------------------------------
 examples:
