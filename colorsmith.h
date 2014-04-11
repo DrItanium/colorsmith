@@ -26,3 +26,5 @@ void glow1(ColorsmithInstruction* inst);
 void glowleg(ColorsmithInstruction* inst);
 void glowring(ColorsmithInstruction* inst);
 void glowdelay(ColorsmithInstruction* inst);
+byte getnormalizedintensity(ColorsmithInstruction* inst);
+byte getnormalizedring(ColorsmithInstruction* inst);

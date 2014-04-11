@@ -14,12 +14,12 @@ void decode(FILE* input) {
    ColorsmithInstruction inst;
    int value;
    do {
-     value = fgetc(input);
-     inst.command = getcommand(value);
-     inst.leg = getleg(value);
-     inst.ring = getring(value);
-     inst.intensity = fgetc(input);
-     interpret(&inst);
+      value = fgetc(input);
+      inst.command = getcommand(value);
+      inst.leg = getleg(value);
+      inst.ring = getring(value);
+      inst.intensity = fgetc(input);
+      interpret(&inst);
    } while(value != EOF);
 }
 
@@ -44,8 +44,8 @@ void interpret(ColorsmithInstruction* inst) {
 }
 void glow1(ColorsmithInstruction* inst) {
    int ring, intensity;
-   ring = inst->ring % 6;
-   intensity = inst->intensity % 10;
+   ring = getnormalizedring(inst);
+   intensity = getnormalizedintensity(inst);
    switch(inst->leg) {
       case 0:
       case 1:
@@ -83,7 +83,7 @@ void glow1(ColorsmithInstruction* inst) {
 
 void glowleg(ColorsmithInstruction* inst) {
    int intensity;
-   intensity = inst->intensity % 10;
+   intensity = getnormalizedintensity(inst);
    switch(inst->leg) {
       case 0:
       case 1:
@@ -120,9 +120,15 @@ void glowleg(ColorsmithInstruction* inst) {
 }
 
 void glowring(ColorsmithInstruction* inst) {
-   piGlowRing(inst->ring % 6, inst->intensity % 10);
+   piGlowRing(getnormalizedring(inst), getnormalizedintensity(inst));
 }
 
 void glowdelay(ColorsmithInstruction* inst) {
    delay(inst->intensity);
+}
+byte getnormalizedintensity(ColorsmithInstruction* inst) {
+   return inst->intensity % 10;
+}
+byte getnormalizedring(ColorsmithInstruction* inst) {
+   return inst->ring % 6;
 }
