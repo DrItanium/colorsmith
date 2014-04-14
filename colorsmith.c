@@ -7,7 +7,9 @@
 #include "colorsmith.h"
 
 void usage(char* name);
+void error(const char* message, int code);
 int parseBigEndian = 0;
+int fullintensity = 0;
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpLine;
@@ -26,6 +28,10 @@ int main(int argc, char* argv[]) {
             switch(tmpLine[1]) {
                case 'b':
                   parseBigEndian = 1;
+                  break;
+               case 'f':
+                  fullintensity = 1;
+                  printf("%s\n","WARNING: Do not stare directly at PiGlow LEDs in full intensity mode!\nThey are super bright");
                   break;
                default:
                   errorFree = 0;
@@ -65,7 +71,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   printf("usage: %s [-b] <file> \n", name);
+   printf("usage: %s [-b] [-f] <file> \n", name);
 }
 
 void decode(FILE* input) {
@@ -104,8 +110,7 @@ void interpret(ColorsmithInstruction* inst) {
          glowdelay(inst);
          break;
       default:
-         fprintf(stderr, "%s\n", "panic: unknown command provided");
-         exit(1);
+         error("panic: unknown command provided", 1);
    }
 }
 void glow1(ColorsmithInstruction* inst) {
@@ -142,8 +147,7 @@ void glow1(ColorsmithInstruction* inst) {
          piGlow1(2, ring, 0);
          break;
       default:
-         fprintf(stderr, "%s\n", "panic: unknown leg combo provided");
-         exit(2);
+         error("panic: unknown leg combo provided", 2);
    }
 }
 
@@ -180,8 +184,7 @@ void glowleg(ColorsmithInstruction* inst) {
          piGlowLeg(2, 0);
          break;
       default:
-         fprintf(stderr, "%s\n", "panic: unknown leg combo provided");
-         exit(2);
+         error("panic: unknown leg combo provided", 2);
    }
 }
 
@@ -193,8 +196,16 @@ void glowdelay(ColorsmithInstruction* inst) {
    delay(inst->intensity);
 }
 byte getnormalizedintensity(ColorsmithInstruction* inst) {
-   return inst->intensity % 10;
+   if(fullintensity) {
+      return inst->intensity;
+   } else {
+      return inst->intensity % 10;
+   }
 }
 byte getnormalizedring(ColorsmithInstruction* inst) {
    return inst->ring % 6;
+}
+void error(const char* message, int code) {
+   fprintf(stderr, "%s\n", message);
+   exit(code);
 }
