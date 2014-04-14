@@ -7,28 +7,52 @@
 #include "colorsmith.h"
 
 void usage(char* name);
+int parseBigEndian = 0;
 int main(int argc, char* argv[]) {
    char* line;
+   char* tmpLine;
    FILE* file;
-   int needsClosing;
+   int needsClosing, last, i, errorFree;
    line = 0;
    file = 0;
+   last = argc - 1;
+   tmpLine = 0;
    needsClosing = 0;
-   piGlowSetup(0);
-   if(argc == 2) {
-      line = argv[1];
-      if(strlen(line) == 1 && line[0] == '-') {
-         file = stdin;
-      } else if(strlen(line) >= 1 && line[0] != '-') {
-         file = fopen(line, "r");
-         if(!file) {
-            fprintf(stderr, "couldn't open %s\n", line);
-            exit(errno);
+   errorFree = 1;
+   if(argc > 1) {
+      for(i = 1; errorFree && (i < last); ++i) {
+         tmpLine = argv[i];
+         if(strlen(tmpLine) == 2 && tmpLine[0] == '-') {
+            switch(tmpLine[1]) {
+               case 'b':
+                  parseBigEndian = 1;
+                  break;
+               default:
+                  errorFree = 0;
+                  break;
+            }
+         } else {
+            errorFree = 0;
+            break;
          }
-         needsClosing = 1;
-      } 
+      }
+      if(errorFree) {
+         line = argv[last];
+         if(strlen(line) == 1 && line[0] == '-') {
+            file = stdin;
+         } else if(strlen(line) >= 1 && line[0] != '-') {
+            file = fopen(line, "r");
+            if(!file) {
+               fprintf(stderr, "couldn't open %s\n", line);
+               exit(errno);
+            }
+            needsClosing = 1;
+         }
+      }
    }
+
    if(file) {
+      piGlowSetup(0);
       decode(file);
       if(needsClosing && fclose(file) != 0) {
          fprintf(stderr, "couldn't close %s\n", line); 
@@ -41,20 +65,28 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   printf("usage: %s <file> | - \n", name);
+   printf("usage: %s [-b] <file> \n", name);
 }
 
 void decode(FILE* input) {
    ColorsmithInstruction inst;
-   int value;
+   int a, b;
    do {
-      value = fgetc(input);
-      inst.command = getcommand(value);
-      inst.leg = getleg(value);
-      inst.ring = getring(value);
-      inst.intensity = fgetc(input);
+      a = fgetc(input);
+      b = fgetc(input);
+      if(parseBigEndian) {
+         inst.command = getcommand(b);
+         inst.leg = getleg(b);
+         inst.ring = getring(b);
+         inst.intensity = a;
+      } else {
+         inst.command = getcommand(a);
+         inst.leg = getleg(a);
+         inst.ring = getring(a);
+         inst.intensity = b;
+      }
       interpret(&inst);
-   } while(value != EOF);
+   } while(a != EOF && b != EOF);
 }
 
 void interpret(ColorsmithInstruction* inst) {
