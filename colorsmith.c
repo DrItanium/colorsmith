@@ -9,7 +9,10 @@
 void usage(char* name);
 void error(const char* message, int code);
 int parseBigEndian = 0;
-int fullintensity = 0;
+int colorintensity = 10;
+int allowdelay = 1;
+/* read one byte at a time */
+int bytemode = 0;
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpLine;
@@ -30,8 +33,17 @@ int main(int argc, char* argv[]) {
                   parseBigEndian = 1;
                   break;
                case 'f':
-                  fullintensity = 1;
+                  colorintensity = 256;
                   printf("%s\n","WARNING: Do not stare directly at PiGlow LEDs in full intensity mode!\nThey are super bright");
+                  break;
+               case 'g':
+                  bytemode = 1;
+                  break;
+               case '2':
+                  colorintensity = 2;
+                  break;
+               case 'n':
+                  allowdelay = 0;
                   break;
                default:
                   errorFree = 0;
@@ -71,7 +83,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   printf("usage: %s [-b] [-f] <file> \n", name);
+   printf("usage: %s [-b] [-f | -2] [-g] [-n] <file> \n", name);
 }
 
 void decode(FILE* input) {
@@ -79,7 +91,12 @@ void decode(FILE* input) {
    int a, b;
    do {
       a = fgetc(input);
-      b = fgetc(input);
+      if(bytemode) {
+         b = a;
+      } else {
+         b = fgetc(input);
+      }
+
       if(parseBigEndian) {
          inst.command = getcommand(b);
          inst.leg = getleg(b);
@@ -193,14 +210,12 @@ void glowring(ColorsmithInstruction* inst) {
 }
 
 void glowdelay(ColorsmithInstruction* inst) {
-   delay(inst->intensity);
+   if(allowdelay) {
+      delay(inst->intensity);
+   }
 }
 byte getnormalizedintensity(ColorsmithInstruction* inst) {
-   if(fullintensity) {
-      return inst->intensity;
-   } else {
-      return inst->intensity % 10;
-   }
+   return inst->intensity % colorintensity;
 }
 byte getnormalizedring(ColorsmithInstruction* inst) {
    return inst->ring % 6;
