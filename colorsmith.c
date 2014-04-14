@@ -2,12 +2,46 @@
 #include <stdio.h>
 #include <wiringPi.h>
 #include <piGlow.h>
+#include <string.h>
+#include <errno.h>
 #include "colorsmith.h"
 
+void usage(char* name);
 int main(int argc, char* argv[]) {
+   char* line;
+   FILE* file;
+   int needsClosing;
+   line = 0;
+   file = 0;
+   needsClosing = 0;
    piGlowSetup(0);
-   decode(stdin);
+   if(argc == 2) {
+      line = argv[1];
+      if(strlen(line) == 1 && line[0] == '-') {
+         file = stdin;
+      } else if(strlen(line) >= 1 && line[0] != '-') {
+         file = fopen(line, "r");
+         if(!file) {
+            fprintf(stderr, "couldn't open %s\n", line);
+            exit(errno);
+         }
+         needsClosing = 1;
+      } 
+   }
+   if(file) {
+      decode(file);
+      if(needsClosing && fclose(file) != 0) {
+         fprintf(stderr, "couldn't close %s\n", line); 
+         exit(errno);
+      }
+   } else {
+      usage(argv[0]);
+   }
    return 0;
+}
+
+void usage(char* name) {
+   printf("usage: %s <file> | - \n", name);
 }
 
 void decode(FILE* input) {
