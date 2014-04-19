@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   printf("usage: %s [-l | -r] [-u] [-n] <file>\n", name);
+   printf("usage: %s [-l | -r] [-d <delayamt>] [-b <brightnesscap>] [-u] [-n] <file>\n", name);
 }
 
 void decode(FlowContainer* container, FILE* input) {
