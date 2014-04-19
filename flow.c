@@ -9,9 +9,6 @@
 void usage(char* name);
 void error(const char* message, int code);
 byte temperbrightness(int input);
-int legmode = 0;
-int ringmode = 0;
-int allowdelay = 1;
 int delayamount = 5;
 int brightnesscap = 10;
 int outward = 0;
@@ -77,31 +74,8 @@ int main(int argc, char* argv[]) {
                      break;
 
                   }
-               case 'l':
-                  {
-                     if(ringmode == 0) {
-                        legmode = 1;
-                     } else {
-                        fprintf(stderr, "error: %s\n", "can't do both leg and ring mode");
-                        errorfree = 0;
-                     }
-                     break;
-                  }
-               case 'r':
-                  {
-                     if(legmode == 0) {
-                        ringmode = 1;
-                     } else {
-                        fprintf(stderr, "error: %s\n", "can't do both leg and ring mode");
-                        errorfree = 0;
-                     }
-                     break;
-                  }
                case 'u':
                   outward = 1;
-                  break;
-               case 'n':
-                  allowdelay = 0;
                   break;
                default:
                   errorfree = 0;
@@ -146,7 +120,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   printf("usage: %s [-l | -r] [-d <delayamt>] [-b <brightnesscap>] [-u] [-n] <file>\n", name);
+   printf("usage: %s [-d <delayamt>] [-b <brightnesscap>] [-u] <file>\n", name);
 }
 
 void decode(FlowContainer* container, FILE* input) {
@@ -157,7 +131,7 @@ void decode(FlowContainer* container, FILE* input) {
       output = temperbrightness(a);
       shiftcells(container, output);
       updateglow(container);
-      if(allowdelay) {
+      if(delayamount) {
          delay(delayamount);
       }
       a = fgetc(input);
@@ -169,14 +143,7 @@ void setup(FlowContainer* container) {
    byte* tmp;
    piGlowSetup(0);
    tmp = 0;
-   count = 0;
-   if(legmode) {
-      count = LegCount;
-   } else if(ringmode) {
-      count = ringmode;
-   } else {
-      count = LEDCount;
-   }
+   count = LEDCount;
    tmp = calloc(count + 1, sizeof(byte));
    if(tmp) {
       container->cells = tmp;
@@ -194,88 +161,36 @@ void shiftcells(FlowContainer* container, byte value) {
    int count;
    count = 0;
    ptr = container->cells;
-   if(legmode) {
-      ptr[2] = ptr[1];
-      ptr[1] = ptr[0];
-      ptr[0] = value;
-   } else if(ringmode) {
-      ptr[5] = ptr[4];
-      ptr[4] = ptr[3];
-      ptr[3] = ptr[2];
-      ptr[2] = ptr[1];
-      ptr[1] = ptr[0];
-      ptr[0] = value;
-   } else {
-      for(count = container->count - 1; count > 0; count--) {
-         ptr[count] = ptr[count - 1];
-      }
-      ptr[count] = value;
+   for(count = container->count - 1; count > 0; count--) {
+      ptr[count] = ptr[count - 1];
    }
+   ptr[count] = value;
 }
+byte legarray [] = {
+   0, 0, 0, 0, 0, 0,
+   1, 1, 1, 1, 1, 1,
+   2, 2, 2, 2, 2, 2,
+};
+byte ringarray [] = {
+   0, 1, 2, 3, 4, 5,
+   0, 1, 2, 3, 4, 5,
+   0, 1, 2, 3, 4, 5,
+};
 void updateglow(FlowContainer* container) {
-#define trydelay if(allowdelay) delay(delayamount)
-
    byte* ptr;
-   int i;
+   int i, j;
    byte a, b;
    a = 0;
    b = 0;
    ptr = container->cells;
-   if(legmode) {
-      piGlowLeg(0, ptr[0]);
-      trydelay;
-      piGlowLeg(1, ptr[1]);
-      trydelay;
-      piGlowLeg(2, ptr[2]);
-      trydelay;
-   } else if(ringmode) {
-      if(outward) {
-
-         piGlowRing(5, ptr[0]);
-         trydelay;
-         piGlowRing(4, ptr[1]);
-         trydelay;
-         piGlowRing(3, ptr[2]);
-         trydelay;
-         piGlowRing(2, ptr[3]);
-         trydelay;
-         piGlowRing(1, ptr[4]);
-         trydelay;
-         piGlowRing(0, ptr[5]);
-         trydelay;
-      } else {
-         piGlowRing(0, ptr[0]);
-         trydelay;
-         piGlowRing(1, ptr[1]);
-         trydelay;
-         piGlowRing(2, ptr[2]);
-         trydelay;
-         piGlowRing(3, ptr[3]);
-         trydelay;
-         piGlowRing(4, ptr[4]);
-         trydelay;
-         piGlowRing(5, ptr[5]);
-         trydelay;
-      }
-   } else {
-      for(i = 0; i < container->count; i++) {
-         if(i < 6) {
-            a = 0;
-         } else if(i >= 6 && i < 12) {
-            a = 1;
-         } else {
-            a = 2;
-         }
-         if(outward) {
-            b = 6 - ((i % 6) + 1);
-         } else {
-            b = i % 6;
-         }
-         piGlow1(a, b, ptr[i]);
-         trydelay;
+   for(i = 0; i < container->count; i++) {
+      a = legarray[i];
+      b = ringarray[i];
+      piGlow1(a, b, ptr[i]);
+      if(delayamount) {
+         delay(delayamount);
       }
    }
-#undef trydelay
 }
 
 
