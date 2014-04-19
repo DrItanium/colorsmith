@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
    FILE* file;
    int needsclosing, last, i, errorfree;
    FlowContainer container;
+   long tmp0;
    container.cells = 0;
    container.count = 0;
    line = 0;
@@ -29,27 +30,73 @@ int main(int argc, char* argv[]) {
    tmpline = 0;
    needsclosing = 0;
    errorfree = 1;
+   tmp0 = 0L;
    if(argc > 1) {
       for(i = 1; errorfree && (i < last); ++i) {
          tmpline = argv[i];
          if(strlen(tmpline) == 2 && tmpline[0] == '-') {
             switch(tmpline[1]) {
+               case 'b': 
+                  {
+                     ++i;
+                     tmp0 = strtol(argv[i], NULL, 10);
+                     if(errno == EINVAL) {
+                        fprintf(stderr, "error: invalid brightness '%s' provided\n", argv[i]);
+                        errorfree = 0;
+                     } else if(errno == ERANGE) {
+                        fprintf(stderr, "error: provided brightness: '%s'  is out of range\n", argv[i]);
+                        errorfree = 0;
+                     } else {
+                        if(tmp0 < 0 || tmp0 > 255) {
+                           fprintf(stderr, "error: provided brightness: %d is out of range\n", tmp0);
+                           errorfree = 0;
+                        } else {
+                           brightnesscap = tmp0;
+                        }
+                     }
+                     break;
+                  }
+               case 'd':
+                  {
+                     ++i;
+                     tmp0 = strtol(argv[i], NULL, 10);
+                     if(errno == EINVAL) {
+                        fprintf(stderr, "error: invalid delay '%s' provided\n", argv[i]);
+                        errorfree = 0;
+                     } else if(errno == ERANGE) {
+                        fprintf(stderr, "error: provided delay '%s' is out of range\n", argv[i]);
+                        errorfree = 0;
+                     } else {
+                        if(tmp0 < 0) {
+                           fprintf(stderr, "error: can't provide a negative delay\n");
+                           errorfree = 0;
+                        } else {
+                           delayamount = tmp0;
+                        }
+                     }
+                     break;
+
+                  }
                case 'l':
-                  if(ringmode == 0) {
-                     legmode = 1;
-                  } else {
-                     fprintf(stderr, "error: %s\n", "can't do both leg and ring mode");
-                     errorfree = 0;
+                  {
+                     if(ringmode == 0) {
+                        legmode = 1;
+                     } else {
+                        fprintf(stderr, "error: %s\n", "can't do both leg and ring mode");
+                        errorfree = 0;
+                     }
+                     break;
                   }
-                  break;
                case 'r':
-                  if(legmode == 0) {
-                     ringmode = 1;
-                  } else {
-                     fprintf(stderr, "error: %s\n", "can't do both leg and ring mode");
-                     errorfree = 0;
+                  {
+                     if(legmode == 0) {
+                        ringmode = 1;
+                     } else {
+                        fprintf(stderr, "error: %s\n", "can't do both leg and ring mode");
+                        errorfree = 0;
+                     }
+                     break;
                   }
-                  break;
                case 'u':
                   outward = 1;
                   break;
@@ -66,16 +113,20 @@ int main(int argc, char* argv[]) {
          }
       }
       if(errorfree) {
-         line = argv[last];
-         if(strlen(line) == 1 && line[0] == '-') {
-            file = stdin;
-         } else if(strlen(line) >= 1 && line[0] != '-') {
-            file = fopen(line, "r");
-            if(!file) {
-               fprintf(stderr, "couldn't open %s\n", line);
-               exit(errno);
+         if(i == last) {
+            line = argv[last];
+            if(strlen(line) == 1 && line[0] == '-') {
+               file = stdin;
+            } else if(strlen(line) >= 1 && line[0] != '-') {
+               file = fopen(line, "r");
+               if(!file) {
+                  fprintf(stderr, "couldn't open %s\n", line);
+                  exit(errno);
+               }
+               needsclosing = 1;
             }
-            needsclosing = 1;
+         } else {
+            fprintf(stderr, "no file provided\n");
          }
       }
    }
