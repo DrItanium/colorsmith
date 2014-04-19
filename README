@@ -27,3 +27,9 @@ examples:
 ./colorsmith < Makefile
 ./colorsmith < colorsmith
 
+
+-------------------------------------------------------------
+
+The flow program is a separate program which flows bytes onto the piglow from a
+given piece of input. It is an experiment in data structures and pointer
+arithmetic which I am somewhat bad at in C. 
