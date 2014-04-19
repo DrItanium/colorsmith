@@ -8,9 +8,12 @@
 
 void usage(char* name);
 void error(const char* message, int code);
+byte temperbrightness(int input);
 int legmode = 0;
 int ringmode = 0;
 int allowdelay = 1;
+int delayamount = 5;
+int brightnesscap = 8;
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpline;
@@ -93,10 +96,15 @@ void usage(char* name) {
 
 void decode(FlowContainer* container, FILE* input) {
    int a;
+   byte output;
    a = fgetc(input);
    while(a != EOF) {
-      shiftcells(container, (byte)a);
+      output = temperbrightness(a);
+      shiftcells(container, output);
       updateglow(container);
+      if(allowdelay) {
+         delay(delayamount);
+      }
       a = fgetc(input);
    }
 }
@@ -150,6 +158,11 @@ void shiftcells(FlowContainer* container, byte value) {
    }
 }
 void updateglow(FlowContainer* container) {
+#define trydelay \
+   if(allowdelay) { \
+      delay(delayamount); \
+   }
+
    byte* ptr;
    int i;
    byte a, b;
@@ -158,26 +171,46 @@ void updateglow(FlowContainer* container) {
    ptr = container->cells;
    if(legmode) {
       piGlowLeg(0, ptr[0]);
+      trydelay
       piGlowLeg(1, ptr[1]);
+      trydelay
       piGlowLeg(2, ptr[2]);
+      trydelay
    } else if(ringmode) {
       piGlowRing(0, ptr[0]);
+      trydelay
       piGlowRing(1, ptr[1]);
+      trydelay
       piGlowRing(2, ptr[2]);
+      trydelay
       piGlowRing(3, ptr[3]);
+      trydelay
       piGlowRing(4, ptr[4]);
+      trydelay
       piGlowRing(5, ptr[5]);
+      trydelay
    } else {
       for(i = 0; i < container->count; i++) {
-         a = i / 3;
+         if(i < 6) {
+            a = 0;
+         } else if(i >= 6 && i < 12) {
+            a = 1;
+         } else {
+            a = 2;
+         }
          b = i % 6;
          piGlow1(a, b, ptr[i]);
+         trydelay
       }
    }
+#undef trydelay
 }
 
 
 void error(const char* message, int code) {
    fprintf(stderr, "%s\n", message);
    exit(code);
+}
+byte temperbrightness(int value) {
+   return value % brightnesscap;
 }
