@@ -4,8 +4,11 @@ include config.mk
 
 SRC = colorsmith.c 
 OBJ = ${SRC:.c=.o}
+FLOW_SRC = flow.c
+FLOW_OBJ = ${FLOW_SRC:.c=.o}
+PROGS = colorsmith flow
 
-all: options colorsmith
+all: options colorsmith flow
 
 options:
 	@echo colorsmith build options:
@@ -23,9 +26,14 @@ colorsmith: ${OBJ}
 	@echo CC -o $@
 	@${CC} -o $@ ${OBJ} ${LDFLAGS}
 
+flow: ${FLOW_OBJ}
+	@echo CC -o $@
+	@${CC} -o $@ ${FLOW_OBJ} ${LDFLAGS}
+
+
 clean:
 	@echo cleaning
-	@rm -f colorsmith ${OBJ}
+	@rm -f ${PROGS} ${OBJ} ${FLOW_OBJ}
 
 
 .PHONY: all options clean 
