@@ -6,12 +6,26 @@
 #include <errno.h>
 #include "flow.h"
 
-void usage(char* name);
-void error(const char* message, int code);
-byte temperbrightness(int input);
+
+byte legarray [] = {
+   0, 0, 0, 0, 0, 0,
+   1, 1, 1, 1, 1, 1,
+   2, 2, 2, 2, 2, 2,
+};
+byte ringarray [] = {
+   0, 1, 2, 3, 4, 5,
+   0, 1, 2, 3, 4, 5,
+   0, 1, 2, 3, 4, 5,
+};
 int delayamount = 5;
 int brightnesscap = 10;
 int outward = 0;
+
+void usage(char* name);
+void error(const char* message, int code);
+byte temperbrightness(int input);
+void commit(FlowContainer* container, byte brightness);
+
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpline;
@@ -19,8 +33,6 @@ int main(int argc, char* argv[]) {
    int needsclosing, last, i, errorfree;
    FlowContainer container;
    long tmp0;
-   container.cells = 0;
-   container.count = 0;
    line = 0;
    file = 0;
    last = argc - 1;
@@ -129,70 +141,54 @@ void decode(FlowContainer* container, FILE* input) {
    a = fgetc(input);
    while(a != EOF) {
       output = temperbrightness(a);
-      shiftcells(container, output);
-      updateglow(container);
-      if(delayamount) {
-         delay(delayamount);
-      }
+      commit(container, output);
       a = fgetc(input);
    }
 }
 
 void setup(FlowContainer* container) {
-   byte count;
-   byte* tmp;
+   int i;
    piGlowSetup(0);
-   tmp = 0;
-   count = LEDCount;
-   tmp = calloc(count + 1, sizeof(byte));
-   if(tmp) {
-      container->cells = tmp;
-      container->count = count;
-   } else {
-      error("couldn't allocate memory!", errno);
+   for(i = 0; i < LEDCount; ++i) {
+      container->cells[i] = 0;
    }
 }
 void shutdown(FlowContainer* container) {
-   free(container->cells);
+   int i;
+   /* turn off the leds by finishing the flow */
+   for(i = 0; i < LEDCount; ++i) {
+      commit(container, 0);
+   }
 }
 
 void shiftcells(FlowContainer* container, byte value) {
    byte* ptr;
-   int count;
-   count = 0;
+   int i;
    ptr = container->cells;
-   for(count = container->count - 1; count > 0; count--) {
-      ptr[count] = ptr[count - 1];
+   for(i = LEDCount - 1; i > 0; i--) {
+      ptr[i] = ptr[i - 1];
    }
-   ptr[count] = value;
+   ptr[i] = value;
 }
-byte legarray [] = {
-   0, 0, 0, 0, 0, 0,
-   1, 1, 1, 1, 1, 1,
-   2, 2, 2, 2, 2, 2,
-};
-byte ringarray [] = {
-   0, 1, 2, 3, 4, 5,
-   0, 1, 2, 3, 4, 5,
-   0, 1, 2, 3, 4, 5,
-};
 void updateglow(FlowContainer* container) {
    byte* ptr;
    int i, j;
-   byte a, b;
-   a = 0;
-   b = 0;
    ptr = container->cells;
-   for(i = 0; i < container->count; i++) {
-      a = legarray[i];
-      b = ringarray[i];
-      piGlow1(a, b, ptr[i]);
+   for(i = 0; i < LEDCount; i++) {
+      piGlow1(legarray[i], ringarray[i], ptr[i]);
       if(delayamount) {
          delay(delayamount);
       }
    }
 }
 
+void commit(FlowContainer* container, byte value) {
+   shiftcells(container, value);
+   updateglow(container);
+   if(delayamount) {
+      delay(delayamount);
+   }
+}
 
 void error(const char* message, int code) {
    fprintf(stderr, "%s\n", message);

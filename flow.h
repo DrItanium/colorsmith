@@ -2,13 +2,11 @@
 typedef unsigned char byte;
 typedef unsigned short ushort;
 enum {
-   LegCount = 3,
    LEDCount = 18,
-   RingCount = 6,
 };
+
 typedef struct FlowContainer {
-   byte* cells;
-   byte count;
+   byte cells[LEDCount];
 } FlowContainer;
 
 
