@@ -13,7 +13,8 @@ int legmode = 0;
 int ringmode = 0;
 int allowdelay = 1;
 int delayamount = 5;
-int brightnesscap = 8;
+int brightnesscap = 10;
+int outward = 0;
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpline;
@@ -48,6 +49,9 @@ int main(int argc, char* argv[]) {
                      fprintf(stderr, "error: %s\n", "can't do both leg and ring mode");
                      errorfree = 0;
                   }
+                  break;
+               case 'u':
+                  outward = 1;
                   break;
                case 'n':
                   allowdelay = 0;
@@ -91,7 +95,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   printf("usage: %s [-l | -r] [-n] <file>\n", name);
+   printf("usage: %s [-l | -r] [-u] [-n] <file>\n", name);
 }
 
 void decode(FlowContainer* container, FILE* input) {
@@ -158,10 +162,7 @@ void shiftcells(FlowContainer* container, byte value) {
    }
 }
 void updateglow(FlowContainer* container) {
-#define trydelay \
-   if(allowdelay) { \
-      delay(delayamount); \
-   }
+#define trydelay if(allowdelay) delay(delayamount)
 
    byte* ptr;
    int i;
@@ -171,24 +172,40 @@ void updateglow(FlowContainer* container) {
    ptr = container->cells;
    if(legmode) {
       piGlowLeg(0, ptr[0]);
-      trydelay
+      trydelay;
       piGlowLeg(1, ptr[1]);
-      trydelay
+      trydelay;
       piGlowLeg(2, ptr[2]);
-      trydelay
+      trydelay;
    } else if(ringmode) {
-      piGlowRing(0, ptr[0]);
-      trydelay
-      piGlowRing(1, ptr[1]);
-      trydelay
-      piGlowRing(2, ptr[2]);
-      trydelay
-      piGlowRing(3, ptr[3]);
-      trydelay
-      piGlowRing(4, ptr[4]);
-      trydelay
-      piGlowRing(5, ptr[5]);
-      trydelay
+      if(outward) {
+
+         piGlowRing(5, ptr[0]);
+         trydelay;
+         piGlowRing(4, ptr[1]);
+         trydelay;
+         piGlowRing(3, ptr[2]);
+         trydelay;
+         piGlowRing(2, ptr[3]);
+         trydelay;
+         piGlowRing(1, ptr[4]);
+         trydelay;
+         piGlowRing(0, ptr[5]);
+         trydelay;
+      } else {
+         piGlowRing(0, ptr[0]);
+         trydelay;
+         piGlowRing(1, ptr[1]);
+         trydelay;
+         piGlowRing(2, ptr[2]);
+         trydelay;
+         piGlowRing(3, ptr[3]);
+         trydelay;
+         piGlowRing(4, ptr[4]);
+         trydelay;
+         piGlowRing(5, ptr[5]);
+         trydelay;
+      }
    } else {
       for(i = 0; i < container->count; i++) {
          if(i < 6) {
@@ -198,9 +215,13 @@ void updateglow(FlowContainer* container) {
          } else {
             a = 2;
          }
-         b = i % 6;
+         if(outward) {
+            b = 6 - ((i % 6) + 1);
+         } else {
+            b = i % 6;
+         }
          piGlow1(a, b, ptr[i]);
-         trydelay
+         trydelay;
       }
    }
 #undef trydelay
