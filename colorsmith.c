@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   printf("usage: %s [-b] [-f | -2] [-g] [-n] <file> \n", name);
+   fprintf(stderr, "usage: %s [-b] [-f | -2] [-g] [-n] <file> \n", name);
 }
 
 void decode(FILE* input) {
