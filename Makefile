@@ -30,10 +30,22 @@ flow: ${FLOW_OBJ}
 	@echo CC -o $@
 	@${CC} -o $@ ${FLOW_OBJ} ${LDFLAGS}
 
+install:
+	@echo installing executables to ${DESTDIR}${PREFIX}/bin
+	@mkdir -p ${DESTDIR}${PREFIX}/bin
+	@cp -f colorsmith ${DESTDIR}${PREFIX}/bin
+	@cp -f flow ${DESTDIR}${PREFIX}/bin
+	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmith
+	@chmod 755 ${DESTDIR}${PREFIX}/bin/flow
+
+uninstall:
+	@echo removing executables from ${DESTDIR}${PREFIX}/bin
+	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmith
+	@rm -f ${DESTDIR}${PREFIX}/bin/flow
 
 clean:
 	@echo cleaning
 	@rm -f ${PROGS} ${OBJ} ${FLOW_OBJ}
 
 
-.PHONY: all options clean 
+.PHONY: all options clean install uninstall
