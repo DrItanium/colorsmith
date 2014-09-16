@@ -36,7 +36,7 @@ install:
 	@cp -f colorsmith ${DESTDIR}${PREFIX}/bin
 	@cp -f colorflow ${DESTDIR}${PREFIX}/bin
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmith
-	@chmod 755 ${DESTDIR}${PREFIX}/bin/flow
+	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorflow
 
 uninstall:
 	@echo removing executables from ${DESTDIR}${PREFIX}/bin
