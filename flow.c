@@ -4,10 +4,8 @@
 #include <piGlow.h>
 #include <string.h>
 #include <errno.h>
+#include "types.h"
 
-/* Instruction particle */
-typedef unsigned char byte;
-typedef unsigned short ushort;
 enum {
    LEDCount = 18,
 };

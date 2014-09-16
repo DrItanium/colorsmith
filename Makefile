@@ -20,7 +20,7 @@ options:
 	@echo CC $<
 	@${CC} -c ${CFLAGS} $<
 
-${OBJ}: colorsmith.h config.mk
+${OBJ}: types.h config.mk
 
 colorsmith: ${OBJ}
 	@echo CC -o $@
