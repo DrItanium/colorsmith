@@ -200,11 +200,11 @@ void commit(FlowContainer* container, byte value) {
    ColorsmithMicroOperation uop;
    shiftcells(container, value);
    updateglow(container);
-   for(i = 0; i < LEDCount; i++) {
-      uop[i] = 0;
-   }
-   uop[i] = delayamount;
-   emit_uop(&uop, fout);
+   if (delayamount) {
+      for(i = 1; i < delayamount; i++) {
+         updateglow(container);
+      }
+   } 
 }
 
 void error(const char* message, int code) {
