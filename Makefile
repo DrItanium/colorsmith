@@ -8,9 +8,11 @@ FLOW_SRC = colorflow.c
 FLOW_OBJ = ${FLOW_SRC:.c=.o}
 WIDE_SRC = colorsmithwide.c
 WIDE_OBJ = ${WIDE_SRC:.c=.o}
-PROGS = colorsmith colorflow colorsmithwide
+FLOW_CC_SRC = colorflowcc.c
+FLOW_CC_OBJ = ${FLOW_CC_SRC:.c=.o}
+PROGS = colorsmith colorflow colorsmithwide colorflowcc
 
-all: options colorsmith colorflow colorsmithwide
+all: options colorsmith colorflow colorsmithwide colorflowcc 
 
 options:
 	@echo colorsmith build options:
@@ -35,6 +37,10 @@ colorflow: ${FLOW_OBJ}
 colorsmithwide: ${WIDE_OBJ}
 	@echo CC -o $@
 	@${CC} -o $@ ${WIDE_OBJ} ${LDFLAGS}
+
+colorflowcc: ${FLOW_CC_OBJ}
+	@echo CC -o $@
+	@${CC} -o $@ ${FLOW_CC_OBJ} ${LDFLAGS}
 
 install:
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin

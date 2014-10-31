@@ -17,6 +17,7 @@ typedef struct FlowContainer {
 
 
 /* inefficient but who cares */
+void emit_uop(ColorsmithMicroOperation* uop, FILE* output);
 void setup(FlowContainer* container);
 void shutdown(FlowContainer* container);
 void decode(FlowContainer* container, FILE* input);
@@ -26,7 +27,7 @@ void updateglow(FlowContainer* container);
 int delayamount = 5;
 int brightnesscap = 10;
 int outward = 0;
-FILE* fout = stdout;
+FILE* fout;
 
 void usage(char* name);
 void error(const char* message, int code);
@@ -40,6 +41,7 @@ int main(int argc, char* argv[]) {
    int needsclosing, last, i, errorfree;
    FlowContainer container;
    long tmp0;
+   fout = stdout;
    line = 0;
    file = 0;
    last = argc - 1;
@@ -211,4 +213,12 @@ void error(const char* message, int code) {
 }
 byte temperbrightness(int value) {
    return value % brightnesscap;
+}
+
+void emit_uop(ColorsmithMicroOperation* uop, FILE* out) {
+   size_t result;
+   result = fwrite(uop, sizeof(ColorsmithMicroOperation), 1, out);
+   if (result != 1) {
+      error("Couldn't output result to file", ferror(out));
+   }
 }

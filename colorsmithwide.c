@@ -7,10 +7,8 @@
 #include "types.h"
 
 
-typedef byte ColorsmithMicroOperation[19];
-
 int main() {
-   int i, j;
+   int i;
    size_t result;
    ColorsmithMicroOperation uop;
    byte value;
@@ -20,11 +18,8 @@ int main() {
       result = fread(&uop, sizeof(ColorsmithMicroOperation), 1, stdin);
       if (result == 1) {
          ptr = (byte*)uop;
-         for(i = 0; i < 3; i++) {
-            for(j = 0; j < 6; j++) {
-               piGlow1(i, j, *ptr);
-               ptr++;
-            }
+         for(i = 0; i < 18; i++, ptr++) {
+            piGlow1(legarray[i], ringarray[i], *ptr);
          }
          delay(*ptr);
       } 
