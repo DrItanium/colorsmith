@@ -7,7 +7,7 @@
 #include "types.h"
 
 
-typedef byte ColorsmithMicroOperation[18];
+typedef byte ColorsmithMicroOperation[19];
 
 int main() {
    int i, j;
@@ -26,6 +26,7 @@ int main() {
                ptr++;
             }
          }
+         delay(*ptr);
       } 
    } while(!feof(stdin) && !ferror(stdin));
    return 0;
