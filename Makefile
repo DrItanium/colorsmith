@@ -11,6 +11,7 @@ WIDE_OBJ = ${WIDE_SRC:.c=.o}
 FLOW_CC_SRC = colorflowcc.c
 FLOW_CC_OBJ = ${FLOW_CC_SRC:.c=.o}
 PROGS = colorsmith colorflow colorsmithwide colorflowcc
+ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ}
 
 all: options colorsmith colorflow colorsmithwide colorflowcc 
 
@@ -60,7 +61,7 @@ uninstall:
 
 clean:
 	@echo cleaning
-	@rm -f ${PROGS} ${OBJ} ${FLOW_OBJ}
+	@rm -f ${PROGS} ${ALL_OBJS}
 
 
 .PHONY: all options clean install uninstall
