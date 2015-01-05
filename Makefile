@@ -49,15 +49,18 @@ install:
 	@cp -f colorsmith ${DESTDIR}${PREFIX}/bin
 	@cp -f colorflow ${DESTDIR}${PREFIX}/bin
 	@cp -f colorsmithwide ${DESTDIR}${PREFIX}/bin
+	@cp -f colorflowcc ${DESTDIR}${PREFIX}/bin
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmith
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorflow
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmithwide
+	@chmod 775 ${DESTDIR}${PREFIX}/bin/colorflowcc
 
 uninstall:
 	@echo removing executables from ${DESTDIR}${PREFIX}/bin
 	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmith
 	@rm -f ${DESTDIR}${PREFIX}/bin/colorflow
 	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmithwide
+	@rm -f ${DESTDIR}${PREFIX}/bin/colorflowcc
 
 clean:
 	@echo cleaning
