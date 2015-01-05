@@ -10,10 +10,12 @@ WIDE_SRC = colorsmithwide.c
 WIDE_OBJ = ${WIDE_SRC:.c=.o}
 FLOW_CC_SRC = colorflowcc.c
 FLOW_CC_OBJ = ${FLOW_CC_SRC:.c=.o}
-PROGS = colorsmith colorflow colorsmithwide colorflowcc
-ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ}
+SMITH_CC_SRC = colorsmithcc.c
+SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
+PROGS = colorsmith colorflow colorsmithwide colorflowcc colorsmithcc
+ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ}
 
-all: options colorsmith colorflow colorsmithwide colorflowcc 
+all: options ${PROGS} 
 
 options:
 	@echo colorsmith build options:
@@ -43,6 +45,10 @@ colorflowcc: ${FLOW_CC_OBJ}
 	@echo CC -o $@
 	@${CC} -o $@ ${FLOW_CC_OBJ} ${LDFLAGS}
 
+colorsmithcc: ${SMITH_CC_OBJ}
+	@echo CC -o $@
+	@${CC} -o $@ ${SMITH_CC_OBJ} ${LDFLAGS}
+
 install:
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
@@ -50,10 +56,12 @@ install:
 	@cp -f colorflow ${DESTDIR}${PREFIX}/bin
 	@cp -f colorsmithwide ${DESTDIR}${PREFIX}/bin
 	@cp -f colorflowcc ${DESTDIR}${PREFIX}/bin
+	@cp -f colorsmithcc ${DESTDIR}${PREFIX}/bin
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmith
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorflow
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmithwide
 	@chmod 775 ${DESTDIR}${PREFIX}/bin/colorflowcc
+	@chmod 775 ${DESTDIR}${PREFIX}/bin/colorsmithcc
 
 uninstall:
 	@echo removing executables from ${DESTDIR}${PREFIX}/bin
@@ -61,6 +69,7 @@ uninstall:
 	@rm -f ${DESTDIR}${PREFIX}/bin/colorflow
 	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmithwide
 	@rm -f ${DESTDIR}${PREFIX}/bin/colorflowcc
+	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmithcc
 
 clean:
 	@echo cleaning
