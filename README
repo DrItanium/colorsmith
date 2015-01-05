@@ -25,3 +25,58 @@ code and normal text but soon I want to try ia64, x86, and amd64 code as well.
 
 The flow program is a separate program which flows bytes onto the piglow from a
 given piece of input. It has similar options to colorsmith.
+
+-------------------------------------------------------------
+
+In my exploration of microcoded architectures I have developed a series of
+programs which do the same thing as colorsmith and colorflow but through wide
+microoperations which are 19 bytes long. The first 18 bytes represent the
+intensities of the 18 leds on the pi glow and the 19th byte is the delay
+amount. 
+
+The map of led index to piglow led is as follows
+
+PIGLOW 
+
+              0
+            1
+          2
+            3        10
+              4   11    9
+                5         8
+                  17        7
+               16             6
+   12       15
+      13 14
+
+
+- So byte zero of a microop is the zeroth led and so on. The program
+"colorsmithwide" is the actual microop parser which takes input from standard
+in and drives the piglow. Each 19 byte uop is read and then piglow is updated
+to reflect the values described in the uop. While this program can be fed input
+from user input, it is somewhat hard to get 19 byte uops. So I have developed
+two programs (colorsmithcc and colorflowcc) which convert files into uops. The
+colorflowcc program translates the input into uops which do the same thing as
+colorflow (timings may not be exactly the same however). Colorsmithcc
+does double conversion as it parses input, translates it into high level
+instructions described above, and then lowers that to uops. This causes a
+massive blowup in the size of a given program. As you're translating
+instructions or intensities (2 and 1 byte respectively) into 19 byte uops. 
+
+One thing to note is that if you get creative with pipe magic you may output
+uops which drive the full intensity of the piglow. Keep this in mind if you do
+something like:
+
+colorsmithcc /bin/ls | colorsmithdis | colorsmithwide
+
+This will parse the output of colorsmithdis which doesn't have the brightness
+tempering applied as was done to the original input via colorsmithcc.
+
+I developed these uop tools to show how simple it is to do microcoding and why
+high level tools are your friend in this case. The actual program
+colorsmithwide is very simple and dumb. It is up to the front end "compilers"
+to generate the "code" which does cool things with the piglow. 
+
+I have kept the original colorsmith and colorflow for comparison purposes as
+well as simplicity if you don't want to muck around with pipes (but you really
+do right :D)
