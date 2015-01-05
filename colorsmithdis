@@ -1,3 +1,4 @@
 #!/bin/bash
 
-xxd -c 19 $1
+
+xxd -g 1 -c 19 $1 | cut -d ' ' --complement -f 1,21- | nl
