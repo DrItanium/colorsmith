@@ -86,18 +86,24 @@ int colorintensity = 10;
 int allowdelay = 1;
 /* read one byte at a time */
 int bytemode = 0;
+int slurp
+FILE* outputfile;
 colorsmithucodecore core;
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpLine;
+   char* outputpath;
    FILE* file;
-   int needsClosing, last, i, errorFree;
+   int needsClosing, last, i, errorFree, outputFileNeedsClosing;
    line = 0;
    file = 0;
    last = argc - 1;
    tmpLine = 0;
    needsClosing = 0;
    errorFree = 1;
+   outputfile = stdout;
+   outputpath = 0;
+   outputFileNeedsClosing = 0;
    if(argc > 1) {
       for(i = 1; errorFree && (i < last); ++i) {
          tmpLine = argv[i];
@@ -119,6 +125,19 @@ int main(int argc, char* argv[]) {
                case 'n':
                   allowdelay = 0;
                   break;
+               case 'o': 
+                  {
+                     // have an output file to write to
+                     ++i;
+                     outputpath = argv[i];
+                     outputfile = fopen(outputpath, "w");
+                     if(!file) {
+                        fprintf(stderr, "couldn't open %s\n", outputpath);
+                        exit(errno);
+                     }
+                     outputFileNeedsClosing = 1;
+                     break;
+                  }
                default:
                   errorFree = 0;
                   break;
@@ -149,6 +168,10 @@ int main(int argc, char* argv[]) {
       decode(file);
       if(needsClosing && fclose(file) != 0) {
          fprintf(stderr, "couldn't close %s\n", line); 
+         exit(errno);
+      }
+      if (outputFileNeedsClosing && fclose(outputfile) != 0) {
+         fprintf(stderr, "couldn't close %s\n", outputpath); 
          exit(errno);
       }
    } else {
@@ -207,7 +230,7 @@ void interpret(ColorsmithInstruction* inst) {
    }
    //commit the core state now that we are done
    //default to stdout for now
-   core_commitstate(&core, stdout);
+   core_commitstate(&core, outputfile);
    //we need to clear out the delay each iteration
    core.registers[DelayRegister] = 0;
 }
@@ -397,9 +420,9 @@ void core_initialize(colorsmithucodecore* core) {
 
 void core_commitstate(colorsmithucodecore* core, FILE* file) {
    size_t result;
-   result = fwrite(uop, sizeof(colorsmithucodecore), 1, out);
+   result = fwrite(uop, sizeof(colorsmithucodecore), 1, file);
    if (result != 1) {
-      error("Couldn't output result to file", ferror(out));
+      error("Couldn't output result to file", ferror(file));
    }
 }
 
@@ -428,14 +451,12 @@ void setleg(colorsmithucodecore* c, int leg, int intensity) {
 void setled(colorsmithucodecore* c, int leg, int ring, int intensity) {
    // we end up with base 6 math since each leg has 6 entries and each ring has
    // three so we can come up with a base six math layout
-   //
-   //
    int index;
    index = 6 * ring + leg;
    if (index >= 0 && index < 18) {
       c->registers[index] = intensity;
    } else {
-      //print this 
+      //print this and use lisp syntax because it is far more readable
       fprintf(stderr, "got illegal index %d from (+ (* 6 %d) %d)\n", index, leg, ring);
       error("panic: see above line!", 5);
    }
