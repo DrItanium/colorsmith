@@ -200,6 +200,10 @@ void commit(FlowContainer* container, byte value) {
    ColorsmithMicroOperation uop;
    shiftcells(container, value);
    updateglow(container);
+   // Used to provide even more of a delay without resorting to tuning hacks
+   // via the delay value. It seems that the space blowup for these operations
+   // is even higher than I thought. This provides the correct amount of
+   // delay to make it look pretty constant
    if (delayamount) {
       for(i = 1; i < delayamount; i++) {
          updateglow(container);
