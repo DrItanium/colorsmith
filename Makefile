@@ -14,6 +14,7 @@ SMITH_CC_SRC = colorsmithcc.c
 SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
 ONTARGET_PROGS = colorsmith colorflow colorsmithwide
 PROGS = colorflowcc colorsmithcc
+SCRIPTS = colorsmithdis
 ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ}
 WIRING_PI_FLAGS=-L/usr/local/lib -lwiringPi -l wiringPiDev
 UNAME_M := $(shell uname -m)
@@ -21,6 +22,8 @@ UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_M), armv6l)
 PROGS += ${ONTARGET_PROGS}
 endif
+
+ALL_PROGS = ${PROGS} ${SCRIPTS}
 
 all: options ${PROGS}
 
@@ -57,30 +60,13 @@ colorsmithcc: ${SMITH_CC_OBJ}
 install:
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
-	@install -m 755 colorsmith ${DESTDIR}${PREFIX}/bin
-	@install -m 755 colorflow ${DESTDIR}${PREFIX}/bin
-	@install -m 755 colorsmithwide ${DESTDIR}${PREFIX}/bin
-	@cp -f colorsmith ${DESTDIR}${PREFIX}/bin
-	@cp -f colorflow ${DESTDIR}${PREFIX}/bin
-	@cp -f colorsmithwide ${DESTDIR}${PREFIX}/bin
-	@cp -f colorflowcc ${DESTDIR}${PREFIX}/bin
-	@cp -f colorsmithcc ${DESTDIR}${PREFIX}/bin
-	@cp -f colorsmithdis ${DESTDIR}${PREFIX}/bin
-	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmith
-	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorflow
-	@chmod 755 ${DESTDIR}${PREFIX}/bin/colorsmithwide
-	@chmod 775 ${DESTDIR}${PREFIX}/bin/colorflowcc
-	@chmod 775 ${DESTDIR}${PREFIX}/bin/colorsmithcc
-	@chmod 775 ${DESTDIR}${PREFIX}/bin/colorsmithdis
+	@install -m 755 ${ALL_PROGS} ${DESTDIR}${PREFIX}/bin
 
 uninstall:
 	@echo removing executables from ${DESTDIR}${PREFIX}/bin
-	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmith
-	@rm -f ${DESTDIR}${PREFIX}/bin/colorflow
-	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmithwide
-	@rm -f ${DESTDIR}${PREFIX}/bin/colorflowcc
-	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmithcc
-	@rm -f ${DESTDIR}${PREFIX}/bin/colorsmithdis
+	@for n in ${ALL_PROGS}; do \
+		rm -f ${DESTDIR}${PREFIX}/bin/$$n; \
+	done
 
 clean:
 	@echo cleaning
