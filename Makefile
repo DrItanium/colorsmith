@@ -12,14 +12,14 @@ FLOW_CC_SRC = colorflowcc.c
 FLOW_CC_OBJ = ${FLOW_CC_SRC:.c=.o}
 SMITH_CC_SRC = colorsmithcc.c
 SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
-ONTARGET_PRGS=colorsmith colorflow colorsmithwide
+ONTARGET_PROGS = colorsmith colorflow colorsmithwide
 PROGS = colorflowcc colorsmithcc
 ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ}
 WIRING_PI_FLAGS=-L/usr/local/lib -lwiringPi -l wiringPiDev
 UNAME_M := $(shell uname -m)
 # On the rpi we actually want all the tools built
 ifeq ($(UNAME_M), armv6l)
-PROGS += ${ONTARGET_PROGS} 
+PROGS += ${ONTARGET_PROGS}
 endif
 
 all: options ${PROGS}
@@ -33,8 +33,6 @@ options:
 .c.o:
 	@echo CC $<
 	@${CC} -c ${CFLAGS} $<
-
-${OBJ}: types.h config.mk
 
 colorsmith: ${OBJ}
 	@echo CC -o $@
@@ -88,11 +86,11 @@ clean:
 	@echo cleaning
 	@rm -f ${PROGS} ${ALL_OBJS}
 
-${OBJ}: ${SRC} types.h
-${FLOW_OBJ}: ${FLOW_SRC} types.h
-${WIDE_OBJ}: ${WIDE_SRC} types.h
-${FLOW_CC_OBJ}: ${FLOW_CC_SRC} types.h
-${SMITH_CC_OBJ}: ${SMITH_CC_SRC} types.h
+${OBJ}: ${SRC} types.h config.mk
+${FLOW_OBJ}: ${FLOW_SRC} types.h config.mk
+${WIDE_OBJ}: ${WIDE_SRC} types.h config.mk
+${FLOW_CC_OBJ}: ${FLOW_CC_SRC} types.h config.mk
+${SMITH_CC_OBJ}: ${SMITH_CC_SRC} types.h config.mk
 
 .PHONY: all options clean install uninstall
 
