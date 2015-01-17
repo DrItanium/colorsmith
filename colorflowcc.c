@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <wiringPi.h>
-#include <piGlow.h>
 #include <string.h>
 #include <errno.h>
 #include "types.h"
@@ -158,7 +156,6 @@ void decode(FlowContainer* container, FILE* input) {
 void setup(FlowContainer* container) {
    ColorsmithMicroOperation uop;
    int i;
-   piGlowSetup(0);
    for(i = 0; i < LEDCount; ++i) {
       container->cells[i] = 0;
       uop[i] = 0;

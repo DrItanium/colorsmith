@@ -1,6 +1,6 @@
 CC = cc
 OUTPUT = colorsmith 
 PREFIX = /usr/local
-LDFLAGS = -lm -lrt -lwiringPi -L/usr/local/lib -lwiringPiDev
+LDFLAGS = -lm -lrt -L/usr/local/lib
 CFLAGS = -O2 -I/usr/local/include 
 

@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <wiringPi.h>
-#include <piGlow.h>
 #include <string.h>
 #include <errno.h>
 #include "types.h"
@@ -162,7 +160,6 @@ int main(int argc, char* argv[]) {
    }
 
    if(file) {
-      piGlowSetup(0);
       core_initialize(&core);
       decode(&core, file, outputfile);
       if(needsClosing && fclose(file) != 0) {
