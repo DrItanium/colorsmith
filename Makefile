@@ -87,10 +87,11 @@ uninstall:
 clean:
 	@echo cleaning
 	@rm -f ${PROGS} ${ALL_OBJS}
+
 ${OBJ}: ${SRC} types.h
 ${FLOW_OBJ}: ${FLOW_SRC} types.h
 ${WIDE_OBJ}: ${WIDE_SRC} types.h
-${FLOW_CC_OBJ}: ${FLOW_CC_OBJ} types.h
+${FLOW_CC_OBJ}: ${FLOW_CC_SRC} types.h
 ${SMITH_CC_OBJ}: ${SMITH_CC_SRC} types.h
 
 .PHONY: all options clean install uninstall
