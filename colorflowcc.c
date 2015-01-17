@@ -3,11 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include "types.h"
-
-enum {
-   LEDCount = 18,
-};
-
+#include "libuop.h"
 
 typedef struct FlowContainer {
    byte cells[LEDCount];
@@ -15,7 +11,6 @@ typedef struct FlowContainer {
 
 
 /* inefficient but who cares */
-void emit_uop(ColorsmithMicroOperation* uop, FILE* output);
 void setup(FlowContainer* container);
 void shutdown(FlowContainer* container);
 void decode(FlowContainer* container, FILE* input);
@@ -158,10 +153,9 @@ void setup(FlowContainer* container) {
    int i;
    for(i = 0; i < LEDCount; ++i) {
       container->cells[i] = 0;
-      uop[i] = 0;
    }
-   uop[i] = delayamount;
-   emit_uop(&uop, fout);
+	uop_initialize(&uop);
+   uop_emit(&uop, fout);
 }
 void shutdown(FlowContainer* container) {
    int i;
@@ -189,7 +183,7 @@ void updateglow(FlowContainer* container) {
       uop[i] = ptr[i];
    }
    uop[i] = delayamount;
-   emit_uop(&uop, fout);
+	uop_emit(&uop, fout);
 }
 
 void commit(FlowContainer* container, byte value) {
@@ -208,18 +202,7 @@ void commit(FlowContainer* container, byte value) {
    } 
 }
 
-void error(const char* message, int code) {
-   fprintf(stderr, "%s\n", message);
-   exit(code);
-}
 byte temperbrightness(int value) {
    return value % brightnesscap;
 }
 
-void emit_uop(ColorsmithMicroOperation* uop, FILE* out) {
-   size_t result;
-   result = fwrite(uop, sizeof(ColorsmithMicroOperation), 1, out);
-   if (result != 1) {
-      error("Couldn't output result to file", ferror(out));
-   }
-}

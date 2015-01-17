@@ -52,9 +52,6 @@ enum {
    DelayRegister = 18,
 };
 
-typedef struct colorsmithucodecore {
-   byte registers[RegisterCount];
-} colorsmithucodecore;
 
 
 enum {
@@ -65,27 +62,26 @@ enum {
 };
 
 /* inefficient but who cares */
-void core_initialize(colorsmithucodecore*);
-void core_commitstate(colorsmithucodecore*, FILE*);
-void decode(colorsmithucodecore* core, FILE* input, FILE* output);
-void interpret(colorsmithucodecore* core, FILE* output, ColorsmithInstruction* inst);
-void glow1(colorsmithucodecore* core, ColorsmithInstruction* inst);
-void glowleg(colorsmithucodecore* core, ColorsmithInstruction* inst);
-void glowring(colorsmithucodecore* core, ColorsmithInstruction* inst);
-void glowdelay(colorsmithucodecore* core, ColorsmithInstruction* inst);
+void core_initialize(ColorsmithMicroOperation*);
+void decode(ColorsmithMicroOperation* core, FILE* input, FILE* output);
+void interpret(ColorsmithMicroOperation* core, FILE* output, ColorsmithInstruction* inst);
+void glow1(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
+void glowleg(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
+void glowring(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
+void glowdelay(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
 byte getnormalizedintensity(ColorsmithInstruction* inst);
 byte getnormalizedring(ColorsmithInstruction* inst);
 void usage(char* name);
 void error(const char* message, int code);
-void setleg(colorsmithucodecore* c, int leg, int intensity);
-void setled(colorsmithucodecore* c, int leg, int ring, int intensity);
+void setleg(ColorsmithMicroOperation* c, int leg, int intensity);
+void setled(ColorsmithMicroOperation* c, int leg, int ring, int intensity);
 int parseBigEndian = 0;
 int colorintensity = 10;
 int allowdelay = 1;
 /* read one byte at a time */
 int bytemode = 0;
 int main(int argc, char* argv[]) {
-   colorsmithucodecore core;
+   ColorsmithMicroOperation core;
    char* line;
    char* tmpLine;
    char* outputpath;
@@ -180,7 +176,7 @@ void usage(char* name) {
    fprintf(stderr, "usage: %s [-o <outputfile>] [-b] [-f | -2] [-g] [-n] <file> \n", name);
 }
 
-void decode(colorsmithucodecore* core, FILE* input, FILE* output) {
+void decode(ColorsmithMicroOperation* core, FILE* input, FILE* output) {
    // translate 2 bytes to 19 bytes!
    ColorsmithInstruction inst;
    int a, b;
@@ -207,7 +203,7 @@ void decode(colorsmithucodecore* core, FILE* input, FILE* output) {
    } while(a != EOF && b != EOF);
 }
 
-void interpret(colorsmithucodecore* core, FILE* output, ColorsmithInstruction* inst) {
+void interpret(ColorsmithMicroOperation* core, FILE* output, ColorsmithInstruction* inst) {
    switch(inst->command) {
       case ColorsmithCommandGlow1:
          glow1(core, inst);
@@ -226,9 +222,9 @@ void interpret(colorsmithucodecore* core, FILE* output, ColorsmithInstruction* i
    }
    //commit the core state now that we are done
    //default to stdout for now
-   core_commitstate(core, output);
+	emit_uop(core, output);
    //we need to clear out the delay each iteration
-   core->registers[DelayRegister] = 0;
+	core[DelayRegister] = 0;
 }
 /* this one is a little interesting since it is using a combination of leg and
  * ring to determine which individual led to set.
@@ -237,7 +233,7 @@ void interpret(colorsmithucodecore* core, FILE* output, ColorsmithInstruction* i
  * individual led as:
  *    index = 6 * leg + ring
  */
-void glow1(colorsmithucodecore* core, ColorsmithInstruction* inst) {
+void glow1(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
    int ring, intensity;
    ring = getnormalizedring(inst);
    intensity = getnormalizedintensity(inst);
@@ -280,7 +276,7 @@ void glow1(colorsmithucodecore* core, ColorsmithInstruction* inst) {
  * Leg 1: 6-11
  * Leg 2: 12-17
  */
-void glowleg(colorsmithucodecore* core, ColorsmithInstruction* inst) {
+void glowleg(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
    int intensity;
    intensity = getnormalizedintensity(inst);
 
@@ -328,46 +324,46 @@ void glowleg(colorsmithucodecore* core, ColorsmithInstruction* inst) {
  * Ring 4: 4, 10, 16
  * Ring 5: 5, 11, 17
  */
-void glowring(colorsmithucodecore* core, ColorsmithInstruction* inst) {
+void glowring(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
    int ring, intensity;
    ring = getnormalizedring(inst);
    intensity = getnormalizedintensity(inst);
    switch(ring) {
       case 0:
-         core->registers[0] = intensity;
-         core->registers[6] = intensity;
-         core->registers[12] = intensity;
+         core[0] = intensity;
+         core[6] = intensity;
+         core[12] = intensity;
          break;
       case 1:
-         core->registers[1] = intensity;
-         core->registers[7] = intensity;
-         core->registers[13] = intensity;
+         core[1] = intensity;
+         core[7] = intensity;
+         core[13] = intensity;
          break;
       case 2:
-         core->registers[2] = intensity;
-         core->registers[8] = intensity;
-         core->registers[14] = intensity;
+         core[2] = intensity;
+         core[8] = intensity;
+         core[14] = intensity;
          break;
       case 3:
-         core->registers[3] = intensity;
-         core->registers[9] = intensity;
-         core->registers[15] = intensity;
+         core[3] = intensity;
+         core[9] = intensity;
+         core[15] = intensity;
          break;
       case 4:
-         core->registers[4] = intensity;
-         core->registers[10] = intensity;
-         core->registers[16] = intensity;
+         core[4] = intensity;
+         core[10] = intensity;
+         core[16] = intensity;
          break;
       case 5:
-         core->registers[5] = intensity;
-         core->registers[11] = intensity;
-         core->registers[17] = intensity;
+         core[5] = intensity;
+         core[11] = intensity;
+         core[17] = intensity;
          break;
       default:
          error("panic: unknown ring combo provided", 3);
    }
 }
-void glowdelay(colorsmithucodecore* core, ColorsmithInstruction* inst) {
+void glowdelay(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
    // keep the current state but just institute a delay. 
    if(allowdelay) {
       core->registers[DelayRegister] = inst->intensity;
@@ -379,59 +375,5 @@ byte getnormalizedintensity(ColorsmithInstruction* inst) {
 byte getnormalizedring(ColorsmithInstruction* inst) {
    return inst->ring % 6;
 }
-void error(const char* message, int code) {
-   fprintf(stderr, "%s\n", message);
-   exit(code);
-}
 
-void core_initialize(colorsmithucodecore* core) {
-   /* initialize the registers to zero */
-   int i;
-   for(i = 0; i < RegisterCount; i++) {
-      core->registers[i] = 0;
-   }
-}
 
-void core_commitstate(colorsmithucodecore* core, FILE* file) {
-   size_t result;
-   result = fwrite(core, sizeof(colorsmithucodecore), 1, file);
-   if (result != 1) {
-      error("Couldn't output result to file", ferror(file));
-   }
-}
-
-void setleg(colorsmithucodecore* c, int leg, int intensity) {
-   int i, begin, end;
-   switch (leg) {
-      case 0:
-         begin = 0;
-         end = 6;
-         break;
-      case 1:
-         begin = 6;
-         end = 12;
-         break;
-      case 2:
-         begin = 12;
-         end = 18;
-         break;
-      default:
-         error("panic: unknown leg provided to be set!", 4);
-   }
-   for(i = begin; i < end; i++) {
-      c->registers[i] = intensity;
-   }
-}
-void setled(colorsmithucodecore* c, int leg, int ring, int intensity) {
-   // we end up with base 6 math since each leg has 6 entries and each ring has
-   // three so we can come up with a base six math layout
-   int index;
-   index = (6 * leg) + ring;
-   if (index >= 0 && index < 18) {
-      c->registers[index] = intensity;
-   } else {
-      //print this and use lisp syntax because it is far more readable
-      fprintf(stderr, "got illegal index %d from (+ (* 6 %d) %d)\n", index, leg, ring);
-      error("panic: see above line!", 5);
-   }
-}
