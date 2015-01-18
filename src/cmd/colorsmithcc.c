@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "types.h"
+#include "libcommon.h"
 
 /*
  * NOTE: this doesn't follow the internal piglow led layout but my own based
@@ -48,13 +48,6 @@ typedef struct ColorsmithInstruction {
 #define getring(value) ((byte)((value & 0xE0) >> 5))
 
 enum {
-   RegisterCount = 19,
-   DelayRegister = 18,
-};
-
-
-
-enum {
    ColorsmithCommandGlow1 = 0,
    ColorsmithCommandGlowLeg,
    ColorsmithCommandGlowRing,
@@ -62,19 +55,15 @@ enum {
 };
 
 /* inefficient but who cares */
-void core_initialize(ColorsmithMicroOperation*);
-void decode(ColorsmithMicroOperation* core, FILE* input, FILE* output);
-void interpret(ColorsmithMicroOperation* core, FILE* output, ColorsmithInstruction* inst);
-void glow1(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
-void glowleg(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
-void glowring(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
-void glowdelay(ColorsmithMicroOperation* core, ColorsmithInstruction* inst);
-byte getnormalizedintensity(ColorsmithInstruction* inst);
-byte getnormalizedring(ColorsmithInstruction* inst);
+void decode(ColorsmithMicroOperation, FILE*, FILE*);
+void interpret(ColorsmithMicroOperation, FILE*, ColorsmithInstruction*);
+void glow1(ColorsmithMicroOperation, ColorsmithInstruction*);
+void glowleg(ColorsmithMicroOperation, ColorsmithInstruction*);
+void glowring(ColorsmithMicroOperation, ColorsmithInstruction*);
+void glowdelay(ColorsmithMicroOperation, ColorsmithInstruction*);
+byte getnormalizedintensity(ColorsmithInstruction*);
+byte getnormalizedring(ColorsmithInstruction*);
 void usage(char* name);
-void error(const char* message, int code);
-void setleg(ColorsmithMicroOperation* c, int leg, int intensity);
-void setled(ColorsmithMicroOperation* c, int leg, int ring, int intensity);
 int parseBigEndian = 0;
 int colorintensity = 10;
 int allowdelay = 1;
@@ -156,8 +145,8 @@ int main(int argc, char* argv[]) {
    }
 
    if(file) {
-      core_initialize(&core);
-      decode(&core, file, outputfile);
+		uop_initialize(core);
+      decode(core, file, outputfile);
       if(needsClosing && fclose(file) != 0) {
          fprintf(stderr, "couldn't close %s\n", line); 
          exit(errno);
@@ -176,7 +165,7 @@ void usage(char* name) {
    fprintf(stderr, "usage: %s [-o <outputfile>] [-b] [-f | -2] [-g] [-n] <file> \n", name);
 }
 
-void decode(ColorsmithMicroOperation* core, FILE* input, FILE* output) {
+void decode(ColorsmithMicroOperation core, FILE* input, FILE* output) {
    // translate 2 bytes to 19 bytes!
    ColorsmithInstruction inst;
    int a, b;
@@ -203,7 +192,7 @@ void decode(ColorsmithMicroOperation* core, FILE* input, FILE* output) {
    } while(a != EOF && b != EOF);
 }
 
-void interpret(ColorsmithMicroOperation* core, FILE* output, ColorsmithInstruction* inst) {
+void interpret(ColorsmithMicroOperation core, FILE* output, ColorsmithInstruction* inst) {
    switch(inst->command) {
       case ColorsmithCommandGlow1:
          glow1(core, inst);
@@ -222,7 +211,7 @@ void interpret(ColorsmithMicroOperation* core, FILE* output, ColorsmithInstructi
    }
    //commit the core state now that we are done
    //default to stdout for now
-	emit_uop(core, output);
+	uop_emit(core, output);
    //we need to clear out the delay each iteration
 	core[DelayRegister] = 0;
 }
@@ -233,7 +222,7 @@ void interpret(ColorsmithMicroOperation* core, FILE* output, ColorsmithInstructi
  * individual led as:
  *    index = 6 * leg + ring
  */
-void glow1(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
+void glow1(ColorsmithMicroOperation core, ColorsmithInstruction* inst) {
    int ring, intensity;
    ring = getnormalizedring(inst);
    intensity = getnormalizedintensity(inst);
@@ -241,30 +230,30 @@ void glow1(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
       case 0:
       case 1:
       case 2:
-         setled(core, inst->leg, ring, intensity);
+         uop_setled(core, inst->leg, ring, intensity);
          break;
       case 3:
-         setled(core, 0, ring, intensity);
-         setled(core, 1, ring, intensity);
+         uop_setled(core, 0, ring, intensity);
+         uop_setled(core, 1, ring, intensity);
          break;
       case 4:
-         setled(core, 0, ring, intensity);
-         setled(core, 2, ring, intensity);
+         uop_setled(core, 0, ring, intensity);
+         uop_setled(core, 2, ring, intensity);
          break;
       case 5:
-         setled(core, 1, ring, intensity);
-         setled(core, 2, ring, intensity);
+         uop_setled(core, 1, ring, intensity);
+         uop_setled(core, 2, ring, intensity);
          break;
       case 6:
          // turn on all leds
-         setled(core, 0, ring, intensity);
-         setled(core, 1, ring, intensity);
-         setled(core, 2, ring, intensity);
+         uop_setled(core, 0, ring, intensity);
+         uop_setled(core, 1, ring, intensity);
+         uop_setled(core, 2, ring, intensity);
          break;
       case 7:
          /* turn them off */
          // just reinitialize the core in this case
-         core_initialize(core);
+         uop_initialize(core);
          break;
       default:
          error("panic: unknown leg combo provided", 2);
@@ -276,7 +265,7 @@ void glow1(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
  * Leg 1: 6-11
  * Leg 2: 12-17
  */
-void glowleg(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
+void glowleg(ColorsmithMicroOperation core, ColorsmithInstruction* inst) {
    int intensity;
    intensity = getnormalizedintensity(inst);
 
@@ -284,29 +273,29 @@ void glowleg(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
       case 0:
       case 1:
       case 2:
-         setleg(core, inst->leg, intensity);
+         uop_setleg(core, inst->leg, intensity);
          break;
       case 3:
-         setleg(core, 0, intensity);
-         setleg(core, 1, intensity);
+         uop_setleg(core, 0, intensity);
+         uop_setleg(core, 1, intensity);
          break;
       case 4:
-         setleg(core, 0, intensity);
-         setleg(core, 2, intensity);
+         uop_setleg(core, 0, intensity);
+         uop_setleg(core, 2, intensity);
          break;
       case 5:
-         setleg(core, 1, intensity);
-         setleg(core, 2, intensity);
+         uop_setleg(core, 1, intensity);
+         uop_setleg(core, 2, intensity);
          break;
       case 6:
-         setleg(core, 0, intensity);
-         setleg(core, 1, intensity);
-         setleg(core, 2, intensity);
+         uop_setleg(core, 0, intensity);
+         uop_setleg(core, 1, intensity);
+         uop_setleg(core, 2, intensity);
          break;
       case 7:
          /* turn them off */
          //just reinitialize the core since everything is being turned off
-         core_initialize(core);
+         uop_initialize(core);
          break;
       default:
          error("panic: unknown leg combo provided", 2);
@@ -324,49 +313,16 @@ void glowleg(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
  * Ring 4: 4, 10, 16
  * Ring 5: 5, 11, 17
  */
-void glowring(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
+void glowring(ColorsmithMicroOperation uop, ColorsmithInstruction* inst) {
    int ring, intensity;
    ring = getnormalizedring(inst);
    intensity = getnormalizedintensity(inst);
-   switch(ring) {
-      case 0:
-         core[0] = intensity;
-         core[6] = intensity;
-         core[12] = intensity;
-         break;
-      case 1:
-         core[1] = intensity;
-         core[7] = intensity;
-         core[13] = intensity;
-         break;
-      case 2:
-         core[2] = intensity;
-         core[8] = intensity;
-         core[14] = intensity;
-         break;
-      case 3:
-         core[3] = intensity;
-         core[9] = intensity;
-         core[15] = intensity;
-         break;
-      case 4:
-         core[4] = intensity;
-         core[10] = intensity;
-         core[16] = intensity;
-         break;
-      case 5:
-         core[5] = intensity;
-         core[11] = intensity;
-         core[17] = intensity;
-         break;
-      default:
-         error("panic: unknown ring combo provided", 3);
-   }
+	uop_setring(uop, ring, intensity);
 }
-void glowdelay(ColorsmithMicroOperation* core, ColorsmithInstruction* inst) {
+void glowdelay(ColorsmithMicroOperation uop, ColorsmithInstruction* inst) {
    // keep the current state but just institute a delay. 
    if(allowdelay) {
-      core->registers[DelayRegister] = inst->intensity;
+		uop[DelayRegister] = inst->intensity;
    }
 }
 byte getnormalizedintensity(ColorsmithInstruction* inst) {

@@ -2,9 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "types.h"
-#include "piglowconstants.h"
-#include "libuop.h"
+#include "libcommon.h"
 
 typedef struct FlowContainer {
    byte cells[LEDCount];

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <errno.h>
+#include <stdlib.h>
 #include "libcommon.h"
 
 void error(const char* message, int code) {

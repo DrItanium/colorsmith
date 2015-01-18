@@ -3,7 +3,7 @@
 #include <string.h>
 #include "libcommon.h"
 
-void emit_uop(ColorsmithMicroOperation uop, FILE* out) {
+void uop_emit(ColorsmithMicroOperation uop, FILE* out) {
    size_t result;
    result = fwrite(uop, sizeof(ColorsmithMicroOperation), 1, out);
    if (result != 1) {
