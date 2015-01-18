@@ -13,8 +13,9 @@ FLOW_CC_SRC = src/cmd/colorflowcc.c
 FLOW_CC_OBJ = ${FLOW_CC_SRC:.c=.o}
 SMITH_CC_SRC = src/cmd/colorsmithcc.c
 SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
+DIS_SCRIPT_LOC = src/cmd/colorsmithdis
 ONTARGET_PROGS = colorsmith colorflow colorsmithwide
-PROGS = colorflowcc colorsmithcc
+PROGS = colorflowcc colorsmithcc 
 SCRIPTS = colorsmithdis
 LIB_COMMON_OBJ = $(patsubst %.c,%.o, $(wildcard src/common/*.c))
 LIB_COMMON_OUT = src/common/libcommon.a
@@ -26,7 +27,8 @@ ifeq ($(UNAME_M), armv6l)
 PROGS += ${ONTARGET_PROGS}
 endif
 
-ALL_PROGS = ${PROGS} ${SCRIPTS}
+ALL_PROGS = ${PROGS} ${DIS_SCRIPT_LOC}
+DELETE_TARGETS = ${PROGS} ${SCRIPTS}
 
 all: options ${PROGS}
 
@@ -72,7 +74,7 @@ install:
 
 uninstall:
 	@echo removing executables from ${DESTDIR}${PREFIX}/bin
-	@for n in ${ALL_PROGS}; do \
+	@for n in ${DELETE_TARGETS}; do \
 		rm -f ${DESTDIR}${PREFIX}/bin/$$n; \
 	done
 
