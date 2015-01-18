@@ -150,7 +150,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   fprintf(stderr, "usage: %s [-d <delayamt>] [-b <brightnesscap>] [-u] <file>\n", name);
+   fprintf(stderr, "usage: %s [-o <output-file>] [-d <delayamt>] [-b <brightnesscap>] [-u] <file>\n", name);
 }
 
 void decode(FlowContainer* container, FILE* input) {
