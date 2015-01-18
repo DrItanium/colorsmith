@@ -4,7 +4,7 @@
 #include <piGlow.h>
 #include <string.h>
 #include <errno.h>
-#include "types.h"
+#include "libcommon.h"
 
 
 typedef struct ColorsmithInstruction {

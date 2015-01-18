@@ -4,11 +4,9 @@
 #include <piGlow.h>
 #include <string.h>
 #include <errno.h>
-#include "types.h"
+#include "libcommon.h"
+#include "piglowtranslationtable.h"
 
-enum {
-   LEDCount = 18,
-};
 
 typedef struct FlowContainer {
    byte cells[LEDCount];
