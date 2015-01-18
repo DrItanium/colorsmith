@@ -16,7 +16,7 @@ int main() {
    byte *ptr;
    piGlowSetup(0);
    do {
-      result = fread(&uop, sizeof(ColorsmithMicroOperation), 1, stdin);
+      result = fread(uop, sizeof(ColorsmithMicroOperation), 1, stdin);
       if (result == 1) {
          ptr = (byte*)uop;
          for(i = 0; i < LEDCount; i++, ptr++) {

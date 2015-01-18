@@ -19,7 +19,7 @@ void updateglow(FlowContainer* container);
 int delayamount = 5;
 int brightnesscap = 10;
 int outward = 0;
-FILE* fout;
+FILE* outputFile;
 
 void usage(char* name);
 void error(const char* message, int code);
@@ -31,12 +31,10 @@ int main(int argc, char* argv[]) {
    char* tmpline;
 	char* outputpath;
    FILE* file;
-	FILE* outputFile;
    int needsclosing, last, i, errorfree;
 	int outputFileNeedsClosing;
    FlowContainer container;
    long tmp0;
-   fout = stdout;
    line = 0;
    file = 0;
    last = argc - 1;
@@ -143,6 +141,9 @@ int main(int argc, char* argv[]) {
       if(needsclosing && fclose(file) != 0) {
 			custom_error(errno, "couldn't close %s\n", line);
       }
+      if(outputFileNeedsClosing && fclose(outputFile) != 0) {
+         custom_error(errno, "couldn't close %s\n", outputpath);
+      }
    } else {
       usage(argv[0]);
    }
@@ -171,7 +172,7 @@ void setup(FlowContainer* container) {
       container->cells[i] = 0;
    }
 	uop_initialize(uop);
-   uop_emit(uop, fout);
+   uop_emit(uop, outputFile);
 }
 void shutdown(FlowContainer* container) {
    int i;
@@ -199,7 +200,7 @@ void updateglow(FlowContainer* container) {
       uop[i] = ptr[i];
    }
    uop[i] = delayamount;
-	uop_emit(uop, fout);
+	uop_emit(uop, outputFile);
 }
 
 void commit(FlowContainer* container, byte value) {

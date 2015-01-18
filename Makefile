@@ -13,10 +13,10 @@ FLOW_CC_SRC = src/cmd/colorflowcc.c
 FLOW_CC_OBJ = ${FLOW_CC_SRC:.c=.o}
 SMITH_CC_SRC = src/cmd/colorsmithcc.c
 SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
-DIS_SCRIPT_LOC = src/cmd/colorsmithdis
+DIS_SRC = src/cmd/colorsmithdis.c
+DIS_OBJ = ${DIS_SRC:.c=.o}
 ONTARGET_PROGS = colorsmith colorflow colorsmithwide
-PROGS = colorflowcc colorsmithcc 
-SCRIPTS = colorsmithdis
+PROGS = colorflowcc colorsmithcc colorsmithdis
 LIB_COMMON_OBJ = $(patsubst %.c,%.o, $(wildcard src/common/*.c))
 LIB_COMMON_OUT = src/common/libcommon.a
 ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ} ${LIB_COMMON_OBJ} ${LIB_COMMON_OUT}
@@ -27,8 +27,8 @@ ifeq ($(UNAME_M), armv6l)
 PROGS += ${ONTARGET_PROGS}
 endif
 
-ALL_PROGS = ${PROGS} ${DIS_SCRIPT_LOC}
-DELETE_TARGETS = ${PROGS} ${SCRIPTS}
+ALL_PROGS = ${PROGS}
+DELETE_TARGETS = ${PROGS}
 
 all: options ${PROGS}
 
@@ -66,6 +66,10 @@ colorflowcc: ${FLOW_CC_OBJ} ${LIB_COMMON_OUT}
 colorsmithcc: ${SMITH_CC_OBJ} ${LIB_COMMON_OUT}
 	@echo CC -o $@
 	@${CC} -o $@ ${SMITH_CC_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT} 
+
+colorsmithdis: ${DIS_OBJ} ${LIB_COMMON_OUT}
+	@echo CC -o $@
+	@${CC} -o $@ ${DIS_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT}
 
 install:
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin
