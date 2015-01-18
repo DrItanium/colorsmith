@@ -2,10 +2,6 @@
 
 include config.mk
 
-LIB_UOP = $(patsubst %.c,%.o, $(wildcard src/libuop/*.c))
-LIB_UOP_OUT = src/libuop/libuop.a
-LIB_COMMON = $(patsubst %.c,%.o, $(wildcard src/common/*.c))
-LIB_COMMON_OUT = src/common/libcommon.a
 
 SRC = src/cmd/colorsmith.c 
 OBJ = ${SRC:.c=.o}
@@ -20,7 +16,9 @@ SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
 ONTARGET_PROGS = colorsmith colorflow colorsmithwide
 PROGS = colorflowcc colorsmithcc
 SCRIPTS = colorsmithdis
-ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ}
+LIB_COMMON_OBJ = $(patsubst %.c,%.o, $(wildcard src/common/*.c))
+LIB_COMMON_OUT = src/common/libcommon.a
+ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ} ${LIB_COMMON_OBJ} ${LIB_COMMON_OUT}
 WIRING_PI_FLAGS=-L/usr/local/lib -lwiringPi -l wiringPiDev
 UNAME_M := $(shell uname -m)
 # On the rpi we actually want all the tools built
@@ -42,7 +40,7 @@ options:
 	@echo CC $<
 	@${CC} -c -Iinclude/ ${CFLAGS} $< -o $@
 
-${LIB_COMMON_OUT}: ${LIB_COMMON}
+${LIB_COMMON_OUT}: ${LIB_COMMON_OBJ}
 	@echo -n Building ${LIB_COMMON_OUT} out of $^ ...
 	@${AR} rcs ${LIB_COMMON_OUT} $^
 	@echo done
