@@ -14,6 +14,7 @@ int main() {
    ColorsmithMicroOperation uop;
    byte value;
    byte *ptr;
+   uop_initialize(uop);
    piGlowSetup(0);
    do {
       result = fread(uop, sizeof(ColorsmithMicroOperation), 1, stdin);
