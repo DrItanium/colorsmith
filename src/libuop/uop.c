@@ -4,7 +4,7 @@
 #include "types.h"
 #include "libuop.h"
 
-void emit_uop(ColorsmithMicroOperation* uop, FILE* out) {
+void emit_uop(ColorsmithMicroOperation uop, FILE* out) {
    size_t result;
    result = fwrite(uop, sizeof(ColorsmithMicroOperation), 1, out);
    if (result != 1) {
@@ -12,7 +12,7 @@ void emit_uop(ColorsmithMicroOperation* uop, FILE* out) {
    }
 }
 
-void uop_setleg(ColorsmithMicroOperation* c, int leg, int intensity) {
+void uop_setleg(ColorsmithMicroOperation uop, int leg, int intensity) {
    int i, begin, end;
    switch (leg) {
       case 0:
@@ -31,10 +31,10 @@ void uop_setleg(ColorsmithMicroOperation* c, int leg, int intensity) {
          error("panic: unknown leg provided to be set!", 4);
    }
    for(i = begin; i < end; i++) {
-      c[i] = intensity;
+      uop[i] = intensity;
    }
 }
-void uop_setled(ColorsmithMicroOperation* uop, int leg, int ring, int intensity) {
+void uop_setled(ColorsmithMicroOperation uop, int leg, int ring, int intensity) {
    // we end up with base 6 math since each leg has 6 entries and each ring has
    // three so we can come up with a base six math layout
    int index;
@@ -48,7 +48,7 @@ void uop_setled(ColorsmithMicroOperation* uop, int leg, int ring, int intensity)
    }
 }
 
-void uop_initialize(ColorsmithMicroOperation* uop) {
+void uop_initialize(ColorsmithMicroOperation uop) {
    /* initialize the registers to zero */
    int i;
    for(i = 0; i < RegisterCount; i++) {

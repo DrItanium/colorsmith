@@ -7,9 +7,9 @@ enum {
 };
 typedef byte ColorsmithMicroOperation[19];
 
-void uop_emit(ColorsmithMicroOperation* uop, FILE* output);
-void uop_setleg(ColorsmithMicroOperation* uop, int leg, int intensity);
-void uop_setled(ColorsmithMicroOperation* uop, int leg, int ring, int intensity);
-void uop_initialize(ColorsmithMicroOperation* uop);
+void uop_emit(ColorsmithMicroOperation uop, FILE* output);
+void uop_setleg(ColorsmithMicroOperation uop, int leg, int intensity);
+void uop_setled(ColorsmithMicroOperation uop, int leg, int ring, int intensity);
+void uop_initialize(ColorsmithMicroOperation uop);
 
 #endif 

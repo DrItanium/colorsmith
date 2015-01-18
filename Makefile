@@ -7,15 +7,15 @@ LIB_UOP_OUT = src/libuop/libuop.a
 LIB_COMMON = $(patsubst %.c,%.o, $(wildcard src/common/*.c))
 LIB_COMMON_OUT = src/common/libcommon.a
 
-SRC = colorsmith.c 
+SRC = src/cmd/colorsmith.c 
 OBJ = ${SRC:.c=.o}
-FLOW_SRC = colorflow.c
+FLOW_SRC = src/cmd/colorflow.c
 FLOW_OBJ = ${FLOW_SRC:.c=.o}
-WIDE_SRC = colorsmithwide.c
+WIDE_SRC = src/cmd/colorsmithwide.c
 WIDE_OBJ = ${WIDE_SRC:.c=.o}
-FLOW_CC_SRC = colorflowcc.c
+FLOW_CC_SRC = src/cmd/colorflowcc.c
 FLOW_CC_OBJ = ${FLOW_CC_SRC:.c=.o}
-SMITH_CC_SRC = colorsmithcc.c
+SMITH_CC_SRC = src/cmd/colorsmithcc.c
 SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
 ONTARGET_PROGS = colorsmith colorflow colorsmithwide
 PROGS = colorflowcc colorsmithcc
@@ -90,8 +90,8 @@ clean:
 ${OBJ}: ${SRC} include/types.h config.mk
 ${FLOW_OBJ}: ${FLOW_SRC} include/types.h config.mk
 ${WIDE_OBJ}: ${WIDE_SRC} include/types.h config.mk
-${FLOW_CC_OBJ}: ${FLOW_CC_SRC} include/types.h include/uop.h config.mk
-${SMITH_CC_OBJ}: ${SMITH_CC_SRC} include/types.h include/uop.h config.mk
+${FLOW_CC_OBJ}: ${FLOW_CC_SRC} include/types.h include/libuop.h config.mk
+${SMITH_CC_OBJ}: ${SMITH_CC_SRC} include/types.h include/libuop.h config.mk
 
 .PHONY: all options clean install uninstall
 

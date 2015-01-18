@@ -4,8 +4,6 @@
 enum {
 	LEDCount = 18,
 	FieldCount = LEDCount + 1,
-	RegisterCount = FieldCount,
-	DelayRegister = RegisterCount - 1,
 };
 
 typedef unsigned char byte;
