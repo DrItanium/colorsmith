@@ -87,11 +87,12 @@ clean:
 	@rm -f ${PROGS} ${ALL_OBJS}
 
 ${OBJ}: ${SRC} include/libcommon.h config.mk
-${FLOW_OBJ}: ${FLOW_SRC} include/libcommon.h config.mk
-${WIDE_OBJ}: ${WIDE_SRC} include/libcommon.h config.mk
+${FLOW_OBJ}: ${FLOW_SRC} include/libcommon.h include/piglowtranslationtable.h config.mk
+${WIDE_OBJ}: ${WIDE_SRC} include/libcommon.h include/piglowtranslationtable.h config.mk
 ${FLOW_CC_OBJ}: ${FLOW_CC_SRC} include/libcommon.h config.mk
 ${SMITH_CC_OBJ}: ${SMITH_CC_SRC} include/libcommon.h config.mk
-
+${DIS_OBJ}: ${DIS_SRC} include/libcommon.h config.mk
+${LIB_COMMON_OBJ}: include/libcommon.h config.mk
 .PHONY: all options clean install uninstall
 
 
