@@ -42,11 +42,6 @@ options:
 	@echo CC $<
 	@${CC} -c -Iinclude/ ${CFLAGS} $< -o $@
 
-${LIB_UOP_OUT}: ${LIB_UOP}
-	@echo -n Building ${LIB_UOP_OUT} out of $^ ...
-	@${AR} rcs ${LIB_UOP_OUT} $^
-	@echo done
-
 ${LIB_COMMON_OUT}: ${LIB_COMMON}
 	@echo -n Building ${LIB_COMMON_OUT} out of $^ ...
 	@${AR} rcs ${LIB_COMMON_OUT} $^
@@ -64,13 +59,13 @@ colorsmithwide: ${WIDE_OBJ} ${LIB_COMMON_OUT}
 	@echo CC -o $@
 	@${CC} -o $@ ${WIDE_OBJ} ${LDFLAGS} ${WIRING_PI_FLAGS} ${LIB_COMMON_OUT}
 
-colorflowcc: ${FLOW_CC_OBJ} ${LIB_UOP_OUT} ${LIB_COMMON_OUT}
+colorflowcc: ${FLOW_CC_OBJ} ${LIB_COMMON_OUT}
 	@echo CC -o $@
-	@${CC} -o $@ ${FLOW_CC_OBJ} ${LDFLAGS} ${LIB_UOP_OUT} ${LIB_COMMON_OUT}
+	@${CC} -o $@ ${FLOW_CC_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT}
 
-colorsmithcc: ${SMITH_CC_OBJ} ${LIB_UOP_OUT} ${LIB_COMMON_OUT}
+colorsmithcc: ${SMITH_CC_OBJ} ${LIB_COMMON_OUT}
 	@echo CC -o $@
-	@${CC} -o $@ ${SMITH_CC_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT} ${LIB_UOP_OUT}
+	@${CC} -o $@ ${SMITH_CC_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT} 
 
 install:
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin
@@ -87,11 +82,11 @@ clean:
 	@echo cleaning
 	@rm -f ${PROGS} ${ALL_OBJS}
 
-${OBJ}: ${SRC} include/types.h config.mk
-${FLOW_OBJ}: ${FLOW_SRC} include/types.h config.mk
-${WIDE_OBJ}: ${WIDE_SRC} include/types.h config.mk
-${FLOW_CC_OBJ}: ${FLOW_CC_SRC} include/types.h include/libuop.h config.mk
-${SMITH_CC_OBJ}: ${SMITH_CC_SRC} include/types.h include/libuop.h config.mk
+${OBJ}: ${SRC} include/libcommon.h config.mk
+${FLOW_OBJ}: ${FLOW_SRC} include/libcommon.h config.mk
+${WIDE_OBJ}: ${WIDE_SRC} include/libcommon.h.h config.mk
+${FLOW_CC_OBJ}: ${FLOW_CC_SRC} include/libcommon.h.h config.mk
+${SMITH_CC_OBJ}: ${SMITH_CC_SRC} include/libcommon.h.h config.mk
 
 .PHONY: all options clean install uninstall
 
