@@ -109,8 +109,7 @@ int main(int argc, char* argv[]) {
             } else if(strlen(line) >= 1 && line[0] != '-') {
                file = fopen(line, "r");
                if(!file) {
-                  fprintf(stderr, "couldn't open %s\n", line);
-                  exit(errno);
+                  custom_error(errno, "couldn't open %s\n", line);
                }
                needsclosing = 1;
             }
@@ -125,8 +124,7 @@ int main(int argc, char* argv[]) {
       decode(&container, file);
       shutdown(&container);
       if(needsclosing && fclose(file) != 0) {
-         fprintf(stderr, "couldn't close %s\n", line); 
-         exit(errno);
+         custom_error(errno, "couldn't close %s\n", line);
       }
    } else {
       usage(argv[0]);
@@ -193,10 +191,6 @@ void commit(FlowContainer* container, byte value) {
    }
 }
 
-void error(const char* message, int code) {
-   fprintf(stderr, "%s\n", message);
-   exit(code);
-}
 byte temperbrightness(int value) {
    return value % brightnesscap;
 }

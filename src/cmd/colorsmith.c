@@ -88,8 +88,7 @@ int main(int argc, char* argv[]) {
          } else if(strlen(line) >= 1 && line[0] != '-') {
             file = fopen(line, "r");
             if(!file) {
-               fprintf(stderr, "couldn't open %s\n", line);
-               exit(errno);
+               custom_error(errno, "couldn't open %s\n", line);
             }
             needsClosing = 1;
          }
@@ -100,8 +99,7 @@ int main(int argc, char* argv[]) {
       piGlowSetup(0);
       decode(file);
       if(needsClosing && fclose(file) != 0) {
-         fprintf(stderr, "couldn't close %s\n", line); 
-         exit(errno);
+         custom_error(errno, "couldn't close %s\n", line);
       }
    } else {
       usage(argv[0]);
@@ -246,8 +244,4 @@ byte getnormalizedintensity(ColorsmithInstruction* inst) {
 }
 byte getnormalizedring(ColorsmithInstruction* inst) {
    return inst->ring % 6;
-}
-void error(const char* message, int code) {
-   fprintf(stderr, "%s\n", message);
-   exit(code);
 }
