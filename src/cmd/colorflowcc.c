@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include "types.h"
+#include "piglowconstants.h"
 #include "libuop.h"
 
 typedef struct FlowContainer {
@@ -154,8 +155,8 @@ void setup(FlowContainer* container) {
    for(i = 0; i < LEDCount; ++i) {
       container->cells[i] = 0;
    }
-	uop_initialize(&uop);
-   uop_emit(&uop, fout);
+	uop_initialize(uop);
+   uop_emit(uop, fout);
 }
 void shutdown(FlowContainer* container) {
    int i;
@@ -183,7 +184,7 @@ void updateglow(FlowContainer* container) {
       uop[i] = ptr[i];
    }
    uop[i] = delayamount;
-	uop_emit(&uop, fout);
+	uop_emit(uop, fout);
 }
 
 void commit(FlowContainer* container, byte value) {

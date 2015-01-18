@@ -40,7 +40,7 @@ options:
 
 .c.o:
 	@echo CC $<
-	@${CC} -c -Iinclude/ ${CFLAGS} $<
+	@${CC} -c -Iinclude/ ${CFLAGS} $< -o $@
 
 ${LIB_UOP_OUT}: ${LIB_UOP}
 	@echo -n Building ${LIB_UOP_OUT} out of $^ ...
