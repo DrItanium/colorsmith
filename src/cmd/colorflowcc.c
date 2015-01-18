@@ -168,10 +168,10 @@ void decode(FlowContainer* container, FILE* input) {
 void setup(FlowContainer* container) {
    ColorsmithMicroOperation uop;
    int i;
+	uop_initialize(uop);
    for(i = 0; i < LEDCount; ++i) {
       container->cells[i] = 0;
    }
-	uop_initialize(uop);
    uop_emit(uop, outputFile);
 }
 void shutdown(FlowContainer* container) {
@@ -195,6 +195,7 @@ void updateglow(FlowContainer* container) {
    byte* ptr;
    ColorsmithMicroOperation uop;
    int i;
+	uop_initialize(uop);
    ptr = container->cells;
    for(i = 0; i < LEDCount; i++) {
       uop[i] = ptr[i];
@@ -205,7 +206,6 @@ void updateglow(FlowContainer* container) {
 
 void commit(FlowContainer* container, byte value) {
    int i;
-   ColorsmithMicroOperation uop;
    shiftcells(container, value);
    updateglow(container);
    // Used to provide even more of a delay without resorting to tuning hacks
