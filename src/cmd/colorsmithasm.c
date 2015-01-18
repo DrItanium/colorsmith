@@ -7,8 +7,6 @@
 void usage(char* name);
 void decode(FILE* inputFile, FILE* outputFile);
 
-int sourceLines;
-
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpline;
@@ -17,7 +15,6 @@ int main(int argc, char* argv[]) {
    FILE* outputFile;
    int needsclosing, last, i, errorfree;
    int outputFileNeedsClosing;
-   sourceLines = 0;
    line = 0;
    inputFile = 0;
    last = argc - 1;
@@ -32,10 +29,6 @@ int main(int argc, char* argv[]) {
          tmpline = argv[i];
          if(strlen(tmpline) == 2 && tmpline[0] == '-') {
             switch(tmpline[1]) {
-               case 'n':
-                  // output source lines
-                  sourceLines = 1;
-                  break;
                case 'o': 
                   {
                      // have an output file to write to
@@ -91,7 +84,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage(char* name) {
-   fprintf(stderr, "usage: %s [-o <output-file>] [-n] <file>\n", name);
+   fprintf(stderr, "usage: %s [-o <output-file>] <file>\n", name);
 }
 
 void decode(FILE* input, FILE* output) {
