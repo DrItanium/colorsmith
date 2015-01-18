@@ -29,8 +29,11 @@ void commit(FlowContainer* container, byte brightness);
 int main(int argc, char* argv[]) {
    char* line;
    char* tmpline;
+	char* outputpath;
    FILE* file;
+	FILE* outputFile;
    int needsclosing, last, i, errorfree;
+	int outputFileNeedsClosing;
    FlowContainer container;
    long tmp0;
    fout = stdout;
@@ -41,6 +44,9 @@ int main(int argc, char* argv[]) {
    needsclosing = 0;
    errorfree = 1;
    tmp0 = 0L;
+	outputFile = stdout;
+	outputpath = 0;
+	outputFileNeedsClosing = 0;
    if(argc > 1) {
       for(i = 1; errorfree && (i < last); ++i) {
          tmpline = argv[i];
@@ -90,6 +96,19 @@ int main(int argc, char* argv[]) {
                case 'u':
                   outward = 1;
                   break;
+               case 'o': 
+                  {
+                     // have an output file to write to
+                     ++i;
+                     outputpath = argv[i];
+                     outputFile = fopen(outputpath, "w");
+                     if(!outputFile) {
+								custom_error(errno, "couldn't open output file %s\n", outputpath);
+                     }
+                     outputFileNeedsClosing = 1;
+                     break;
+                  }
+
                default:
                   errorfree = 0;
                   break;
@@ -107,8 +126,7 @@ int main(int argc, char* argv[]) {
             } else if(strlen(line) >= 1 && line[0] != '-') {
                file = fopen(line, "r");
                if(!file) {
-                  fprintf(stderr, "couldn't open %s\n", line);
-                  exit(errno);
+						custom_error(errno, "couldn't open %s\n", line);
                }
                needsclosing = 1;
             }
@@ -123,8 +141,7 @@ int main(int argc, char* argv[]) {
       decode(&container, file);
       shutdown(&container);
       if(needsclosing && fclose(file) != 0) {
-         fprintf(stderr, "couldn't close %s\n", line); 
-         exit(errno);
+			custom_error(errno, "couldn't close %s\n", line);
       }
    } else {
       usage(argv[0]);

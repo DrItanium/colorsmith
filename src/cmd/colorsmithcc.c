@@ -114,8 +114,7 @@ int main(int argc, char* argv[]) {
                      outputpath = argv[i];
                      outputfile = fopen(outputpath, "w");
                      if(!outputfile) {
-                        fprintf(stderr, "couldn't open output file %s\n", outputpath);
-                        exit(errno);
+								custom_error(errno, "couldn't open output file %s\n", outputpath);
                      }
                      outputFileNeedsClosing = 1;
                      break;
@@ -136,8 +135,7 @@ int main(int argc, char* argv[]) {
          } else if(strlen(line) >= 1 && line[0] != '-') {
             file = fopen(line, "r");
             if(!file) {
-               fprintf(stderr, "couldn't open input %s\n", line);
-               exit(errno);
+					custom_error(errno, "couldn't open input %s\n", line);
             }
             needsClosing = 1;
          }
@@ -148,12 +146,10 @@ int main(int argc, char* argv[]) {
 		uop_initialize(core);
       decode(core, file, outputfile);
       if(needsClosing && fclose(file) != 0) {
-         fprintf(stderr, "couldn't close %s\n", line); 
-         exit(errno);
+			custom_error(errno, "couldn't close %s\n", line);
       }
       if (outputFileNeedsClosing && fclose(outputfile) != 0) {
-         fprintf(stderr, "couldn't close %s\n", outputpath); 
-         exit(errno);
+			custom_error(errno, "couldn't close %s\n", outputpath);
       }
    } else {
       usage(argv[0]);
