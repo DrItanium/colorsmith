@@ -5,9 +5,6 @@
 
 void uop_initialize(ColorsmithMicroOperation uop) {
    /* initialize the registers to zero */
-   int i;
-   for(i = 0; i < RegisterCount; i++) {
-      uop[i] = 0;
-   }
+	memset(uop, 0, sizeof(ColorsmithMicroOperation));
 }
 

@@ -4,38 +4,45 @@
 #include "libcommon.h"
 
 void uop_setring(ColorsmithMicroOperation uop, int ring, int intensity) {
+	int a, b, c;
+	a = 0;
+	b = 0;
+	c = 0;
    switch(ring) {
       case 0:
-         uop[0] = intensity;
-         uop[6] = intensity;
-         uop[12] = intensity;
+			a = 0;
+			b = 6;
+			c = 12;
          break;
       case 1:
-         uop[1] = intensity;
-         uop[7] = intensity;
-         uop[13] = intensity;
+			a = 1;
+			b = 7;
+			c = 13;
          break;
       case 2:
-         uop[2] = intensity;
-         uop[8] = intensity;
-         uop[14] = intensity;
+			a = 2;
+			b = 8;
+			c = 14;
          break;
       case 3:
-         uop[3] = intensity;
-         uop[9] = intensity;
-         uop[15] = intensity;
+			a = 3;
+			b = 9;
+			c = 15;
          break;
       case 4:
-         uop[4] = intensity;
-         uop[10] = intensity;
-         uop[16] = intensity;
+			a = 4;
+			b = 10;
+			c = 16;
          break;
       case 5:
-         uop[5] = intensity;
-         uop[11] = intensity;
-         uop[17] = intensity;
+			a = 5;
+			b = 11;
+			c = 17;
          break;
       default:
          error("panic: unknown ring combo provided", 3);
    }
+	uop[a] = intensity;
+	uop[b] = intensity;
+	uop[c] = intensity;
 }

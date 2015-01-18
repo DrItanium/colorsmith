@@ -12,8 +12,7 @@ void uop_setled(ColorsmithMicroOperation uop, int leg, int ring, int intensity) 
 		uop[index] = intensity;
    } else {
       //print this and use lisp syntax because it is far more readable
-      fprintf(stderr, "got illegal index %d from (+ (* 6 %d) %d)\n", index, leg, ring);
-      error("panic: see above line!", 5);
+      custom_error(5, "panic: got illegal index %d from (+ (* 6 %d) %d)\n", index, leg, ring);
    }
 }
 
