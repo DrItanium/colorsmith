@@ -1,10 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "types.h"
 #include "libcommon.h"
-#include "piglowconstants.h"
-#include "libuop.h"
 
 void emit_uop(ColorsmithMicroOperation uop, FILE* out) {
    size_t result;
