@@ -15,8 +15,10 @@ SMITH_CC_SRC = src/cmd/colorsmithcc.c
 SMITH_CC_OBJ = ${SMITH_CC_SRC:.c=.o}
 DIS_SRC = src/cmd/colorsmithdis.c
 DIS_OBJ = ${DIS_SRC:.c=.o}
+ASM_SRC = src/cmd/colorsmithasm.c
+ASM_OBJ = ${ASM_SRC:.c=.o}
 ONTARGET_PROGS = colorsmith colorflow colorsmithwide
-PROGS = colorflowcc colorsmithcc colorsmithdis
+PROGS = colorflowcc colorsmithcc colorsmithdis colorsmithasm
 LIB_COMMON_OBJ = $(patsubst %.c,%.o, $(wildcard src/common/*.c))
 LIB_COMMON_OUT = src/common/libcommon.a
 ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ} ${LIB_COMMON_OBJ} ${LIB_COMMON_OUT}
@@ -70,6 +72,10 @@ colorsmithcc: ${SMITH_CC_OBJ} ${LIB_COMMON_OUT}
 colorsmithdis: ${DIS_OBJ} ${LIB_COMMON_OUT}
 	@echo CC -o $@
 	@${CC} -o $@ ${DIS_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT}
+colorsmithasm: ${ASM_OBJ} ${LIB_COMMON_OUT}
+	@echo CC -o $@
+	@${CC} -o $@ ${ASM_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT}
+	
 
 install:
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin

@@ -20,4 +20,5 @@ void uop_initialize(ColorsmithMicroOperation uop);
 
 void error(const char* message, int code);
 void custom_error(int code, const char* message, ...);
+char* freadline(FILE* f);
 #endif 
