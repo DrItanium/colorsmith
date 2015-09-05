@@ -8,15 +8,12 @@ enum {
 	EndConstants
 };
 char* freadline(FILE* f) {
-	char* output;
-	int curr, count, capacity;
-	curr = 0;
-	output = NULL;
+	char* output = NULL;
 	if (f && !feof(f)) {
-		count = 0;
-		capacity = CapacityIncreaseSize;
+		int count = 0;
+		int capacity = CapacityIncreaseSize;
 		output = calloc(CapacityIncreaseSize, sizeof(char));
-		for (curr = fgetc(f); curr != '\n' && curr != EOF; curr = fgetc(f)) {
+		for (int curr = fgetc(f); curr != '\n' && curr != EOF; curr = fgetc(f)) {
 			if (count == capacity) {
 				capacity += CapacityIncreaseSize;
 				output = realloc(output, capacity);

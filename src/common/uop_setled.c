@@ -6,8 +6,7 @@
 void uop_setled(ColorsmithMicroOperation uop, int leg, int ring, int intensity) {
    // we end up with base 6 math since each leg has 6 entries and each ring has
    // three so we can come up with a base six math layout
-   int index;
-   index = (6 * leg) + ring;
+   int index = (6 * leg) + ring;
    if (index >= 0 && index < 18) {
 		uop[index] = intensity;
    } else {
