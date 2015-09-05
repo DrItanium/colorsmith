@@ -18,7 +18,7 @@ void uop_setring(ColorsmithMicroOperation uop, int ring, int intensity);
 void uop_initialize(ColorsmithMicroOperation uop);
 
 
-void error(const char* message, int code);
-void custom_error(int code, const char* message, ...);
+void error(const char* message, int code) __attribute__ ((noreturn));
+void custom_error(int code, const char* message, ...) __attribute__ ((noreturn));
 char* freadline(FILE* f);
 #endif 

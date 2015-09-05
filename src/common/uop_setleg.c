@@ -4,7 +4,7 @@
 #include "libcommon.h"
 
 void uop_setleg(ColorsmithMicroOperation uop, int leg, int intensity) {
-   int i, begin, end;
+   int begin, end;
    switch (leg) {
       case 0:
          begin = 0;
@@ -21,7 +21,8 @@ void uop_setleg(ColorsmithMicroOperation uop, int leg, int intensity) {
       default:
          error("panic: unknown leg provided to be set!", 4);
    }
-   for(i = begin; i < end; i++) {
+
+   for(int i = begin; i < end; i++) {
       uop[i] = intensity;
    }
 }

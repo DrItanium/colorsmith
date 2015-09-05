@@ -17,15 +17,19 @@ DIS_SRC = src/cmd/colorsmithdis.c
 DIS_OBJ = ${DIS_SRC:.c=.o}
 ASM_SRC = src/cmd/colorsmithasm.c
 ASM_OBJ = ${ASM_SRC:.c=.o}
+BASE6TABLE_SRC = src/cmd/base6table.c
+BASE6TABLE_OBJ = ${BASE6TABLE_SRC:.c=.o}
 ONTARGET_PROGS = colorsmith colorflow colorsmithwide
-PROGS = colorflowcc colorsmithcc colorsmithdis colorsmithasm
+PROGS = colorflowcc colorsmithcc colorsmithdis colorsmithasm base6table
 LIB_COMMON_OBJ = $(patsubst %.c,%.o, $(wildcard src/common/*.c))
 LIB_COMMON_OUT = src/common/libcommon.a
-ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ} ${LIB_COMMON_OBJ} ${LIB_COMMON_OUT}
+ALL_OBJS = ${OBJ} ${FLOW_OBJ} ${WIDE_OBJ} ${FLOW_CC_OBJ} ${SMITH_CC_OBJ} ${LIB_COMMON_OBJ} ${LIB_COMMON_OUT} ${BASE6TABLE_OBJ}
 WIRING_PI_FLAGS=-L/usr/local/lib -lwiringPi -l wiringPiDev
 UNAME_M := $(shell uname -m)
 # On the rpi we actually want all the tools built
 ifeq ($(UNAME_M), armv6l)
+PROGS += ${ONTARGET_PROGS}
+else ifeq ($(UNAME_M), armv7l)
 PROGS += ${ONTARGET_PROGS}
 endif
 
@@ -76,6 +80,9 @@ colorsmithasm: ${ASM_OBJ} ${LIB_COMMON_OUT}
 	@echo CC -o $@
 	@${CC} -o $@ ${ASM_OBJ} ${LDFLAGS} ${LIB_COMMON_OUT}
 	
+base6table: ${BASE6TABLE_OBJ}
+	@echo CC -o $@
+	@${CC} -o $@ ${BASE6TABLE_OBJ} ${LDFLAGS}
 
 install:
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin
