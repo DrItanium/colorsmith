@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "types.h"
+#include "libcommon.h"
+#include "piglowtranslationtable.h"
 
 int main() {
    int i;
