@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
 #include "libcommon.h"
 
 /* inefficient but who cares */
@@ -18,6 +19,7 @@ typedef void (*Starter)(void);
 typedef void (*ContainerOp)(byte* container);
 int delayamount = 5;
 int brightnesscap = 10;
+bool tmode = false;
 int numLEDs = LEDCount;
 FILE* outputFile;
 // the variable aspects for different modes
@@ -110,6 +112,7 @@ int main(int argc, char* argv[]) {
 						numLEDs = LEDCount / 3; // we only have 6 bytes to work with in this mode
 						updateglowLambda = updateglowThird;
 						setupLambda = setupThird;
+						tmode = true;
 						break;
 					default:
 						errorfree = 0;
@@ -191,7 +194,11 @@ void commit(byte* container, byte value) {
 	}
 }
 int cycleCount() {
-	return delayamount + 1;
+	if (tmode) {
+		return 1;
+	} else {
+		return delayamount + 1;
+	}
 }
 
 byte temperbrightness(int value) {
